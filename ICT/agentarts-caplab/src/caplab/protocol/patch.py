@@ -329,11 +329,11 @@ def apply_confirmed(state: dict, patch: dict, decision: str, text: str,
     if errors:
         raise PatchError(errors)
     next_state = copy.deepcopy(state)
-    if decision == "reject":
+    if decision in {"reject", "revise"}:
         event = {
             "confirmation_id": next_id(next_state, "CFM"),
             "patch_id": patch["patch_id"],
-            "decision": "reject",
+            "decision": decision,
             "scope": scope or sorted(touched_sections(patch)),
             "confirmation_text": text.strip(),
             "recorded_at": now(),

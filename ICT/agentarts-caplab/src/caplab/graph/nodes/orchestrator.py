@@ -1,18 +1,19 @@
 """固定流程节点：预处理 → 校验 → 路由 → 阶段推理 → propose → 确认门 → apply → 回验。
 
-采用 LangGraph interrupt 实现确认门：等待用户明确确认时图中断，状态写入
+提案轮结束时保存待确认草稿，明确确认后从应用节点进入，状态写入
 持久化 checkpoint；恢复时由服务端校验确认文本，绝不从沉默推断确认。
 """
 from __future__ import annotations
 
 import json
 from typing import Any
+from uuid import uuid4
 
 from ...knowledge.retriever import search as retrieve_cards
 from ...llm import LLM
 from ...observability.otel import setup_tracing, span
 from ...persistence.repository import StateRepository
-from ...protocol.ids import SKILL_VERSION, STAGE_TO_ACTOR, next_id, now
+from ...protocol.ids import SKILL_VERSION
 from ...protocol.patch import (
     PatchError, apply_confirmed, propose, rollback, route_for, validate_state,
 )
@@ -71,6 +72,12 @@ def make_context(repo: StateRepository, llm: LLM):
                 if stage == "blocked" else "当前阶段已闭环，如需调整请告诉我具体变化。"
             )
             return {**state, "reply": reply}
+        goal = state.get("requested_goal")
+        if goal:
+            return {**state, "reply": "这是你想探索的目标。看看表述是否准确，确认后可以为它列出小行动。",
+                    "proposed_patch": {"actor_skill": "caplab-profile-intake", "summary": goal,
+                                       "changes": [{"op": "set", "path": "/sections/intake/decision_question",
+                                                    "value": goal}]}}
         prompt = system_prompt(stage)
         # 可溯源检索：真实工具调用 + Tool span（探针 P2 的证据来源）
         retrieval_note = ""
@@ -92,9 +99,12 @@ def make_context(repo: StateRepository, llm: LLM):
                     )
             except Exception as exc:  # 检索失败不阻断主流程，但显式暴露
                 retrieval_note = f"\n\n知识卡检索失败：{exc}"
+        recent = state.get("recent_dialogue", [])
         user_input = (
             f"当前状态（JSON）：\n{json.dumps(state['state'], ensure_ascii=False)[:6000]}\n\n"
             f"用户本轮消息：{state['message']}{retrieval_note}\n\n"
+            f"个人行动清单（本人报告，独立于知识库）：{json.dumps(state.get('action_steps', []), ensure_ascii=False)}\n"
+            f"最近对话（仅供理解上下文，未经确认的内容不能视为事实）：{json.dumps(recent, ensure_ascii=False)}\n"
             "请只输出 JSON：{\"reply\": \"给用户的自然语言回复\", \"patch\": null 或补丁对象}。"
             "补丁对象字段：patch_id(PAT-000001), actor_skill, skill_version(2.1.1), "
             "base_revision, operation(propose_patch), changes([{op,path,value}]), "
@@ -113,6 +123,7 @@ def make_context(repo: StateRepository, llm: LLM):
         return {
             **state,
             "reply": reply,
+            "recent_dialogue": (recent + [{"user": state["message"][:1000], "assistant": reply[:1000]}])[-4:],
             "proposed_patch": parsed.get("patch"),
             "stage_prompt": prompt[:200],
         }
@@ -123,7 +134,7 @@ def make_context(repo: StateRepository, llm: LLM):
             return {**state, "awaiting_confirmation": False}
         try:
             patch = dict(patch)
-            patch.setdefault("patch_id", next_id(state["state"], "PAT"))
+            patch["patch_id"] = f"PAT-{len(state['state']['confirmation_events']) + 1:06d}"
             patch.setdefault("skill_version", SKILL_VERSION)
             patch.setdefault("base_revision", state["state"]["revision"])
             patch.setdefault("operation", "propose_patch")
@@ -133,6 +144,7 @@ def make_context(repo: StateRepository, llm: LLM):
             return {
                 **state,
                 "proposed_patch": patch,
+                "proposal_token": uuid4().hex,
                 "patch_preview": preview["preview"],
                 "affected_sections": preview["affected_sections"],
                 "awaiting_confirmation": True,
@@ -178,7 +190,9 @@ def make_context(repo: StateRepository, llm: LLM):
                 "active_stage": stage,
                 "route_reason": reason,
                 "awaiting_confirmation": False,
-                "reply": f"已确认。补丁 {patch.get('patch_id')} 已应用，revision {state['state']['revision']} → {updated['revision']}。下一阶段：{stage}。",
+                "proposed_patch": None,
+                "confirmation_decision": "",
+                "reply": "已保存你的确认。" if decision not in {"reject", "revise"} else "已放下这份草稿，你可以重新表述。",
             }
         except PatchError as exc:
             return {**state, "errors": exc.errors}

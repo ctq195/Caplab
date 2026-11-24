@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { AccountGate } from '@/components/account-gate';
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +33,7 @@ export default function RootLayout({
         >
           跳转到主要内容
         </a>
-        <div id="main-content">{children}</div>
+        <div id="main-content"><AccountGate>{children}</AccountGate></div>
       </body>
     </html>
   );

@@ -95,7 +95,7 @@ class PostgresRepository:
             )
             row = cur.fetchone()
             if row:
-                return json.loads(row[0])
+                return (json.loads(row[0]) if isinstance(row[0], str) else row[0])
         state = empty_state(Path(__file__).resolve().parents[3] / "assets" / "templates")
         self.save(session_id, user_id, state)
         return state
@@ -124,7 +124,7 @@ class PostgresRepository:
                 cur.execute(
                     """INSERT INTO caplab_confirmation
                        (user_id, session_id, confirmation_id, patch_id, decision, scope, confirmation_text, recorded_at)
-                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (confirmation_id) DO NOTHING""",
+                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (user_id, session_id, confirmation_id) DO NOTHING""",
                     (user_id, session_id, event["confirmation_id"], event.get("patch_id"),
                      event.get("decision"), json.dumps(event.get("scope", [])),
                      event.get("confirmation_text", ""), event.get("recorded_at", now())),
@@ -146,7 +146,7 @@ class PostgresRepository:
                 (user_id, session_id, rev),
             )
             row = cur.fetchone()
-            return json.loads(row[0]) if row else None
+            return (json.loads(row[0]) if isinstance(row[0], str) else row[0]) if row else None
 
     def list_sessions(self, user_id: str) -> list[str]:
         with self._connect() as conn, conn.cursor() as cur:

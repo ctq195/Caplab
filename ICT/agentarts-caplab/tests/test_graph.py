@@ -29,7 +29,7 @@ def test_graph_runs_and_returns_stage_output(graph):
     )
     assert result["active_stage"] == "profile_intake"
     assert result["state"]["revision"] == 0
-    assert "profile_intake" in result["reply"]
+    assert result["awaiting_confirmation"] and result["proposed_patch"]
     assert "当前 revision" in result["display_block"]
     assert result.get("errors", []) == []
     assert llm.calls, "FakeLLM should have been invoked"

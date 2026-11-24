@@ -15,6 +15,9 @@ import {
   FileText,
   Image as ImageIcon,
 } from 'lucide-react';
+import { useOwner } from '@/components/account-gate';
+import { GoalProgress } from '@/components/goal-progress';
+import { privateDraft } from '@/lib/private-draft';
 import { VoiceCall } from '@/components/voice-call';
 import { MessageBubble } from '@/components/message-bubble';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -34,8 +37,15 @@ interface SavedChat {
   messages: ChatMessage[];
 }
 
-const chatStorageKey = 'caplab-chat-history';
-const legacyChatKey = 'caplab-chat-messages';
+type Round = {
+  model_mode: 'demo' | 'live';
+  revision: number;
+  active_stage: string;
+  confirmed_goal: string | null;
+  proposal: { token: string; summary: string; changes: {path:string; value:unknown}[] } | null;
+  response: string;
+};
+const stageNames: Record<string,string> = {profile_intake:'说说近况', profile_confirmation:'核对理解', path_convergence:'比较方向', path_evidence_cycle:'尝试行动', evidence_review:'回顾发现', closed:'本轮结束', blocked:'暂停探索'};
 
 function saveableMessages(messages: ChatMessage[]) {
   return messages.filter((message) => message.content.trim())
@@ -51,6 +61,12 @@ export default function ChatPage() {
 }
 
 function ChatView() {
+  const owner = useOwner();
+  const [goalEntry,setGoalEntry] = useState(false);
+  const [round,setRound] = useState<Round | null>(null);
+  const [confirmBusy,setConfirmBusy] = useState(false);
+  const [loadFailed,setLoadFailed] = useState(false);
+  const saveQueue = useRef(Promise.resolve());
   const searchParams = useSearchParams();
   const [inputValue, setInputValue] = useState('');
   const [textMode, setTextMode] = useState(false);
@@ -62,21 +78,17 @@ function ChatView() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(chatStorageKey);
-      const saved = stored ? JSON.parse(stored) as { active: SavedChat; history: SavedChat[] } : null;
-      const previousMessages = saved?.active.messages ?? JSON.parse(localStorage.getItem(legacyChatKey) || 'null') as ChatMessage[] | null;
-      setActiveId(saved?.active.id ?? nextId());
-      if (saved) setHistory(saved.history);
-      if (Array.isArray(previousMessages) && previousMessages.length) {
-        setMessages(previousMessages.map((message) => message.id === WELCOME.id ? WELCOME : message));
-        setTextMode(previousMessages.some((message) => message.role === 'user'));
-      }
-    } catch {
-      setActiveId(nextId());
-    }
-    setReady(true);
-  }, []);
+    let active = true;
+    privateDraft(owner,'chats').then((saved: {active:SavedChat; history:SavedChat[]} | null) => {
+      if (!active) return;
+      setActiveId(saved?.active.id ?? crypto.randomUUID());
+      setHistory(saved?.history || []);
+      setMessages(saved?.active.messages.length ? saved.active.messages : [WELCOME]);
+      setTextMode(true);
+      setReady(true);
+    }).catch(() => { if (active) setLoadFailed(true); });
+    return () => { active = false; };
+  }, [owner]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [pendingAttachments, setPendingAttachments] = useState<Attachment[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -101,17 +113,49 @@ function ChatView() {
 
   useEffect(() => {
     if (!ready) return;
+    const snapshot = { active: { id: activeId, messages: saveableMessages(messages) }, history };
+    saveQueue.current = saveQueue.current.then(async () => {
+      await privateDraft(owner,'chats',snapshot); setStorageIssue(false);
+    }).catch(() => setStorageIssue(true));
+  }, [activeId, messages, history, ready, owner]);
+
+  const invoke = useCallback(async (chat: string, fields: object, signal?: AbortSignal): Promise<Round> => {
+    const res = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json','x-caplab-owner':owner},
+      body:JSON.stringify({chat,...fields}), signal});
+    const data = await res.json();
+    if (!res.ok) throw Error(data.error || '请求失败');
+    return data;
+  },[owner]);
+  const latestRequest = useRef(0);
+  useEffect(() => {
+    if (!activeId) return;
+    const seq = ++latestRequest.current;
+    const controller = new AbortController();
+    invoke(activeId,{action:'status'},controller.signal).then(data => {
+      if (seq === latestRequest.current) setRound(data);
+    }).catch(e => { if (!controller.signal.aborted && seq === latestRequest.current) setError(e.message); });
+    return () => controller.abort();
+  },[activeId,invoke]);
+
+  async function decide(mode: 'confirm' | 'reject' | 'edit') {
+    if (!round?.proposal || confirmBusy) return;
+    setConfirmBusy(true); setError(null);
+    const seq = ++latestRequest.current;
     try {
-      localStorage.setItem(chatStorageKey, JSON.stringify({
-        active: { id: activeId, messages: saveableMessages(messages) },
-        history,
-      }));
-      localStorage.removeItem(legacyChatKey);
-      setStorageIssue(false);
-    } catch {
-      setStorageIssue(true);
-    }
-  }, [activeId, messages, history, ready]);
+      const text = mode === 'confirm' ? '确认保存这份草稿' : '退回这份草稿';
+      const data = await invoke(activeId,{action:'confirm',decision:mode === 'edit' ? 'revise' : mode,confirmation_text:text,token:round.proposal.token});
+      if (seq !== latestRequest.current) return;
+      setRound(data);
+      setMessages(prev => [...prev,{id:nextId(),role:'assistant',content:data.response}]);
+      if (mode === 'edit') { setInputValue(round.proposal.summary); setGoalEntry(round.proposal.changes.length === 1 && round.proposal.changes[0].path === "/sections/intake/decision_question"); textareaRef.current?.focus(); }
+    } catch(e) {
+      if (seq === latestRequest.current) {
+        setError(e instanceof Error ? e.message : '确认失败');
+        const fresh = await invoke(activeId,{action:'status'}).catch(() => null);
+        if (fresh && seq === latestRequest.current) setRound(fresh);
+      }
+    } finally { setConfirmBusy(false); }
+  }
 
   const autoGrow = () => {
     const ta = textareaRef.current;
@@ -175,8 +219,9 @@ function ChatView() {
     }
   };
 
-  const sendMessage = async (text: string, attachments: Attachment[], voice = false) => {
+  const sendMessage = async (text: string, attachments: Attachment[], voice = false, action = 'message') => {
     const content = text.trim();
+    if (round?.proposal || confirmBusy) { setTextMode(true); setInputValue(content); return; }
     if (!content || (abortRef.current && !abortRef.current.signal.aborted)) return;
 
     setError(null);
@@ -193,11 +238,6 @@ function ChatView() {
     const assistantId = nextId();
     const assistantMsg: ChatMessage = { id: assistantId, role: 'assistant', content: '', streaming: true };
 
-    const payloadMessages = [...messages, userMsg].map((m) => ({
-      role: m.role,
-      content: m.content,
-    }));
-
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setIsStreaming(true);
     setPendingAttachments([]);
@@ -209,64 +249,14 @@ function ChatView() {
     void uploadAttachments(attachments, userMsg.id, controller.signal);
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: payloadMessages, voice }),
-        signal: controller.signal,
-      });
-
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => null);
-        throw new Error(errBody?.error || `请求失败（${res.status}）`);
-      }
-      if (!res.body) throw new Error('响应没有返回流');
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let accumulated = '';
-
-      const patchAssistant = (updater: (c: string) => string) => {
-        setMessages((prev) =>
-          prev.map((m) => (m.id === assistantId ? { ...m, content: updater(m.content) } : m)),
-        );
-      };
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const rawLine of lines) {
-          const line = rawLine.trim();
-          if (!line.startsWith('data:')) continue;
-          const data = line.slice(5).trim();
-          if (data === '[DONE]') continue;
-          try {
-            const json = JSON.parse(data);
-            if (json.error) throw new Error(json.error);
-            const delta = json.choices?.[0]?.delta?.content;
-            if (delta) {
-              accumulated += delta;
-              const snapshot = accumulated;
-              patchAssistant(() => snapshot);
-            }
-          } catch (parseErr) {
-            if (parseErr instanceof Error && parseErr.message && !parseErr.message.includes('JSON')) {
-              throw parseErr;
-            }
-          }
-        }
-      }
-
-      setMessages((prev) =>
-        prev.map((m) => (m.id === assistantId ? { ...m, streaming: false } : m)),
-      );
-      return accumulated;
+      const seq = ++latestRequest.current;
+      const data = await invoke(activeId,{action,message:userContent},controller.signal);
+      if (seq !== latestRequest.current) return;
+      setRound(data);
+      setGoalEntry(false);
+      if (data.proposal && voice) setTextMode(true);
+      setMessages(prev => prev.map(m => m.id === assistantId ? {...m,content:data.response,streaming:false} : m));
+      return data.response;
     } catch (e) {
       if (controller.signal.aborted) {
         setMessages((prev) =>
@@ -274,7 +264,11 @@ function ChatView() {
         );
       } else {
         const msg = e instanceof Error ? e.message : '发生未知错误';
-        if (abortRef.current === controller) setError(msg);
+        if (abortRef.current === controller) {
+          setError(msg); setInputValue(content);
+          const fresh = await invoke(activeId,{action:'status'}).catch(() => null);
+          if (fresh && abortRef.current === controller) setRound(fresh);
+        }
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantId
@@ -293,7 +287,7 @@ function ChatView() {
   };
 
   const handleSend = () => {
-    void sendMessage(inputValue, pendingAttachments);
+    void sendMessage(inputValue, pendingAttachments, false, goalEntry ? 'propose_goal' : 'message');
   };
 
   // 首页统一入口携带的参数：?q=... 直接进入文字对话并发送；?mode=call 自动发起语音通话
@@ -302,6 +296,7 @@ function ChatView() {
     entryHandled.current = true;
     const q = searchParams.get('q')?.trim();
     if (q) {
+      window.history.replaceState(null, "", "/chat");
       setTextMode(true);
       void sendMessage(q, []);
       return;
@@ -341,6 +336,9 @@ function ChatView() {
       setTextMode(true);
       return;
     }
+    ++latestRequest.current;
+    setRound(null);
+    setGoalEntry(false);
     abortRef.current?.abort();
     abortRef.current = null;
     setIsStreaming(false);
@@ -378,7 +376,7 @@ function ChatView() {
   const chats = currentChat ? [currentChat, ...history] : history;
   const historyList = (
     <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
-      {storageIssue && <p role="status" className="mb-3 text-sm text-destructive">浏览器暂时无法保存，关闭或刷新页面会丢失本次改动。</p>}
+      {storageIssue && <p role="status" className="mb-3 text-sm text-destructive">会话暂时未能保存到账号，请导出本次对话。</p>}
       {chats.length === 0 ? <p className="px-2 py-4 text-sm text-muted-foreground">还没有对话记录。</p> : (
         <ul className="space-y-1">
           {chats.map((chat) => (
@@ -423,6 +421,7 @@ function ChatView() {
     </>
   );
 
+  if (!ready) return <p className="p-6">{loadFailed ? '读取会话失败，请刷新后重试。' : '正在恢复你的会话…'}</p>;
   return (
     <div className="flex min-h-dvh">
       {sidebarOpen && (
@@ -448,11 +447,13 @@ function ChatView() {
               <div className="bg-background/85 backdrop-blur-xl border-b border-border/60 px-4 sm:px-5 py-2.5 flex items-center justify-between gap-3 shrink-0">
                 <div className="flex shrink-0 items-center gap-1">
                   {historyControl}
+                  {round?.model_mode === 'demo' && <span className="text-xs text-muted-foreground">规则演示</span>}
                   <Link href="/" aria-label="返回 CapLab 首页" className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                     <ClipboardList className="h-3.5 w-3.5" /> CapLab
                   </Link>
                 </div>
                 <div className="flex flex-wrap items-center justify-end gap-x-2">
+                  <button className="btn-ghost" disabled={isStreaming || !!round?.proposal} onClick={() => {setGoalEntry(!goalEntry); textareaRef.current?.focus();}}>{goalEntry ? '返回聊天' : '设定目标'}</button>
                   <button className="btn-ghost text-center" disabled={isStreaming} onClick={() => {
                     flushSync(() => setTextMode(false));
                     callRef.current?.start();
@@ -474,6 +475,13 @@ function ChatView() {
                 {messages.map((m) => (
                   <MessageBubble key={m.id} message={m} />
                 ))}
+                {round?.proposal && <section className="rounded-xl border border-primary/30 bg-card p-4">
+                  <h2 className="font-semibold">这样记准确吗？</h2><p className="my-2">{round.proposal.summary}</p>
+                  <details><summary>查看具体改动</summary>{round.proposal.changes.map((c,i) => <p key={i} className="break-words text-sm">{c.path.split('/').pop()} · {typeof c.value === 'string' ? c.value : JSON.stringify(c.value)}</p>)}</details>
+                  <div className="mt-3 flex gap-2">{(['confirm','edit','reject'] as const).map((m,i) => <button type="button" className="btn-secondary" disabled={confirmBusy || isStreaming} key={m} onClick={() => decide(m)}>{['确认保存','改一下','先不保存'][i]}</button>)}</div>
+                </section>}
+                {round?.confirmed_goal && <GoalProgress key={activeId+round.confirmed_goal} chat={activeId} goal={round.confirmed_goal}/>}
+                {round && <details className="text-sm text-muted-foreground"><summary>查看探索进展</summary>{stageNames[round.active_stage] || round.active_stage} · 已确认版本 {round.revision} · {round.model_mode === 'demo' ? '本地规则演示' : '模型推理'}</details>}
                 {error && (
                   <div className="text-xs text-destructive bg-destructive/10 rounded-lg px-3 py-2">
                     {error}
@@ -563,7 +571,8 @@ function ChatView() {
                     value={inputValue}
                     onChange={handleInput}
                     onKeyDown={handleKeyDown}
-                    placeholder="想聊什么？"
+                    disabled={!!round?.proposal || confirmBusy}
+                    placeholder={round?.proposal ? "先核对上面的草稿，再继续聊" : goalEntry ? "写下你想达成的目标" : "想聊什么？"}
                     className="flex-1 resize-none bg-muted/70 border border-transparent rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10 transition-all max-h-28"
                   />
                   {isStreaming ? (

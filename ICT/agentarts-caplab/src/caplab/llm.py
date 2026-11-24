@@ -52,8 +52,27 @@ class FakeLLM:
         import re
         match = re.search(r"当前阶段（CURRENT_STAGE）：(\w+)", system)
         stage = match.group(1) if match else "profile_intake"
-        if "确认" in user and stage:
-            return json.dumps({"reply": "好的，已记录。", "patch": None}, ensure_ascii=False)
+        if stage == "profile_intake":
+            state_text, message_text = user.split("\n\n用户本轮消息：", 1)
+            revision = int(re.search(r'"revision":\s*(\d+)', state_text).group(1))
+            message = message_text.split("\n\n", 1)[0].strip()
+            goal_match = re.search(r'"decision_question":\s*("(?:[^"\\]|\\.)*")', state_text)
+            if goal_match and not message.startswith("新目标："):
+                goal = json.loads(goal_match.group(1))
+                steps_text = user.rsplit("个人行动清单（本人报告，独立于知识库）：", 1)[-1].split("\n", 1)[0]
+                steps = json.loads(steps_text)
+                if steps:
+                    completed = sum(bool(step["done"]) for step in steps)
+                    remaining = 100 - int(100 * completed / len(steps) + 0.5)
+                    return json.dumps({"reply": f"“{goal}”的行动清单已经完成 {completed}/{len(steps)} 项，还差 {remaining}%。下一步想聊哪项行动？", "patch": None}, ensure_ascii=False)
+                return json.dumps({"reply": f"你已确认想探索“{goal}”。你可以在目标卡中记下一个小行动，完成后勾选。想换方向时，发“新目标：”加上你的想法。", "patch": None}, ensure_ascii=False)
+            message = message.removeprefix("新目标：").strip()
+            return json.dumps({
+                "reply": "我把你这次想探索的问题整理成了草稿。看看是否准确，确认后就可以拆成小行动。",
+                "patch": {"actor_skill": "caplab-profile-intake", "base_revision": revision,
+                          "summary": message, "changes": [{"op": "set", "path": "/sections/intake/decision_question",
+                                                            "value": message}]},
+            }, ensure_ascii=False)
         return json.dumps({
             "reply": f"[{stage}] 请告诉我最近一次与本轮决策相关的具体事件。",
             "patch": None,
@@ -63,6 +82,6 @@ class FakeLLM:
 def build_llm(llm: LLM | None = None) -> LLM:
     if llm is not None:
         return llm
-    if os.getenv("CAPLAB_OFFLINE") == "1":
+    if os.getenv("CAPLAB_OFFLINE") == "1" and not all(os.getenv(k) for k in ("MAAS_BASE_URL", "MAAS_MODEL", "MAAS_API_KEY")):
         return FakeLLM()
     return MaaSLLM()

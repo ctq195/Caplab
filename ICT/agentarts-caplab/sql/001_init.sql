@@ -24,14 +24,15 @@ CREATE TABLE IF NOT EXISTS caplab_revision (
 );
 
 CREATE TABLE IF NOT EXISTS caplab_confirmation (
-    confirmation_id   TEXT PRIMARY KEY,
+    confirmation_id   TEXT NOT NULL,
     user_id           TEXT NOT NULL,
     session_id        TEXT NOT NULL,
     patch_id          TEXT,
     decision          TEXT NOT NULL CHECK (decision IN ('confirm','partial','revise','reject')),
     scope             JSONB NOT NULL DEFAULT '[]'::jsonb,
     confirmation_text TEXT NOT NULL,
-    recorded_at       TIMESTAMPTZ NOT NULL
+    recorded_at       TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY (user_id, session_id, confirmation_id)
 );
 CREATE INDEX IF NOT EXISTS idx_confirmation_scope ON caplab_confirmation (user_id, session_id, recorded_at);
 

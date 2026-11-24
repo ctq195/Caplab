@@ -1,11 +1,13 @@
 'use client';
+import { useOwner } from '@/components/account-gate';
+import { privateDraft } from '@/lib/private-draft';
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, ClipboardCheck, MessagesSquare } from 'lucide-react';
 import { PageShell } from '@/components/page-shell';
 import { interviewFollowup, interviewReport, interviewStart, type InterviewReport, type InterviewSetup, type InterviewStart, type InterviewTurn } from '@/lib/interview-session';
-import { parseResume, resumeDraftKey, resumeText } from '@/lib/resume-document';
+import { parseResume, resumeText } from '@/lib/resume-document';
 
 const emptySetup: InterviewSetup = { company: '', role: '', round: '岗位面', description: '', resume: '' };
 const fieldClass = 'w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm';
@@ -16,6 +18,7 @@ export default function InterviewPage() {
 }
 
 function InterviewRoom() {
+  const owner = useOwner();
   const params = useSearchParams();
   const [setup, setSetup] = useState(emptySetup);
   const [opening, setOpening] = useState<InterviewStart | null>(null);
@@ -26,10 +29,10 @@ function InterviewRoom() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  function loadDraft() {
+  async function loadDraft() {
     try {
-      const stored = localStorage.getItem(resumeDraftKey);
-      const text = stored ? resumeText(parseResume(JSON.parse(stored))) : '';
+      const stored = await privateDraft(owner,'resume');
+      const text = stored ? resumeText(parseResume(stored)) : '';
       if (!text) {
         setError('简历工坊还没有可用内容，也可以直接粘贴简历。');
         return;

@@ -1,34 +1,33 @@
 'use client';
+import { useOwner } from '@/components/account-gate';
+import { privateDraft } from '@/lib/private-draft';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowDownToLine, FileUser, Plus, Printer, Upload } from 'lucide-react';
 import { PageShell } from '@/components/page-shell';
-import { basicFields, editableSections, emptyResume, newResumeItem, parseResume, plainText, readSection, resumeDraftKey, resumeText, richText, sections, type SectionId } from '@/lib/resume-document';
+import { basicFields, editableSections, emptyResume, newResumeItem, parseResume, plainText, readSection, resumeText, richText, sections, type SectionId } from '@/lib/resume-document';
 
 const fieldClass = 'w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm';
 
 export default function ResumePage() {
+  const owner = useOwner();
   const [resume, setResume] = useState(emptyResume);
   const [ready, setReady] = useState(false);
   const [notice, setNotice] = useState('');
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(resumeDraftKey);
-      if (saved) setResume(parseResume(JSON.parse(saved)));
-    } catch {
-      setNotice('本地草稿无法读取，可以重新导入 JSON。');
-    }
-    setReady(true);
-  }, []);
+    let active = true;
+    privateDraft(owner,'resume').then(saved => {
+      if (!active) return;
+      if (saved) setResume(parseResume(saved));
+      setReady(true);
+    }).catch(() => setNotice('读取个人草稿失败，请刷新重试。'));
+    return () => { active = false; };
+  }, [owner]);
   useEffect(() => {
     if (!ready) return;
-    try {
-      localStorage.setItem(resumeDraftKey, JSON.stringify(resume));
-    } catch {
-      setNotice('浏览器无法保存草稿，请导出 JSON 保留。');
-    }
-  }, [resume, ready]);
+    void privateDraft(owner,'resume',resume).catch(() => setNotice('草稿未保存，请导出 JSON 保留。'));
+  }, [resume, ready, owner]);
 
   const summary = readSection(resume, 'summary');
   const preview = resumeText(resume, true);

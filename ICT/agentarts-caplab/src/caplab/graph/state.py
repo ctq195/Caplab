@@ -31,6 +31,7 @@ class GraphState(TypedDict, total=False):
 
     # ---- 提议与确认 ----
     proposed_patch: dict[str, Any] | None
+    proposal_token: str
     patch_preview: dict[str, Any]
     affected_sections: list[str]
     confirmation_decision: str   # confirm/partial/revise/reject
@@ -42,5 +43,8 @@ class GraphState(TypedDict, total=False):
     reply: str
     display_block: str
     errors: list[str]
+    requested_goal: str
+    action_steps: list[dict[str, Any]]
+    recent_dialogue: list[dict[str, str]]
     stage_prompt: str
     trace_tags: dict[str, str]
