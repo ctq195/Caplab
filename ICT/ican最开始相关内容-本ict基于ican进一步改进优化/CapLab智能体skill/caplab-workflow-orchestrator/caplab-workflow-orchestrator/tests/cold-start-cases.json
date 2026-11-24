@@ -1,0 +1,410 @@
+{
+  "skill": "caplab-cold-start",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "CS-Y1-001",
+      "grade": "year_1",
+      "scenario": "完全迷茫",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "我是计算机大一新生，完全不知道以后做什么。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "询问最近一次具体学习或实践活动",
+      "must_output": [
+        "一次只问一个问题"
+      ],
+      "forbidden_output": [
+        "你最适合",
+        "直接选择职业"
+      ],
+      "scoring": {
+        "route": 2,
+        "one_question": 2,
+        "evidence_first": 2,
+        "no_final_recommendation": 2
+      }
+    },
+    {
+      "id": "CS-Y1-002",
+      "grade": "year_1",
+      "scenario": "兴趣宽泛",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "编程、AI、产品我都觉得有意思，但都不了解。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "要求选择并描述一个最近做过的具体任务",
+      "must_output": [
+        "具体事件"
+      ],
+      "forbidden_output": [
+        "三个方向都适合",
+        "匹配度"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "concrete_event": 2,
+        "avoids_labeling": 2,
+        "grade_adaptation": 2
+      }
+    },
+    {
+      "id": "CS-Y1-003",
+      "grade": "year_1",
+      "scenario": "游戏兴趣误映射",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "我特别爱玩游戏，所以我是不是应该做游戏开发？",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "追问喜欢游戏中的哪类具体活动而非直接映射岗位",
+      "must_output": [
+        "需要验证"
+      ],
+      "forbidden_output": [
+        "爱玩游戏就适合游戏开发"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "causal_boundary": 2,
+        "experiment_orientation": 2,
+        "no_final_recommendation": 2
+      }
+    },
+    {
+      "id": "CS-Y1-004",
+      "grade": "year_1",
+      "scenario": "家庭期望冲突",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "家里让我考公，但我刚学 Python 也觉得挺有意思。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "澄清家庭意见是硬约束还是重要参考",
+      "must_output": [
+        "约束",
+        "仍需验证"
+      ],
+      "forbidden_output": [
+        "听父母的",
+        "不要考公"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "constraint_handling": 2,
+        "neutrality": 2,
+        "two_path_space": 2
+      }
+    },
+    {
+      "id": "CS-Y1-005",
+      "grade": "year_1",
+      "scenario": "没有经历",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "no_usable_match",
+      "student_input": "我没有项目、竞赛和社团经历，什么都说不出来。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "提供日常学习任务选项并让用户选一个愿意尝试的",
+      "must_output": [
+        "探索框架",
+        "低成本"
+      ],
+      "forbidden_output": [
+        "来源显示",
+        "岗位热度"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "zero_evidence_fallback": 2,
+        "no_fake_source": 2,
+        "low_cost_action": 2
+      }
+    },
+    {
+      "id": "CS-Y2-001",
+      "grade": "year_2",
+      "scenario": "只有课程",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "大二，只学过数据结构和数据库，没有做过项目。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "追问一项课程作业中的具体投入与反馈",
+      "must_output": [
+        "课程证据"
+      ],
+      "forbidden_output": [
+        "没有项目就无法判断"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "uses_course_evidence": 2,
+        "grade_adaptation": 2,
+        "no_final_recommendation": 2
+      }
+    },
+    {
+      "id": "CS-Y2-002",
+      "grade": "year_2",
+      "scenario": "跟风 AI",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "现在 AI 很火，我决定以后只做大模型。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "追问实际做过的 AI 相关任务或愿意验证的工作内容",
+      "must_output": [
+        "事实需要来源",
+        "方向假设"
+      ],
+      "forbidden_output": [
+        "AI 一定最有前景",
+        "只做大模型是最佳选择"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "trend_boundary": 2,
+        "evidence_first": 2,
+        "no_market_hallucination": 2
+      }
+    },
+    {
+      "id": "CS-Y2-003",
+      "grade": "year_2",
+      "scenario": "项目体验冲突",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "我嘴上想做后端，但上次团队项目里最喜欢访谈用户和画流程。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "追问喜欢访谈和流程工作的具体原因与反馈",
+      "must_output": [
+        "冲突",
+        "待验证"
+      ],
+      "forbidden_output": [
+        "你其实不适合后端"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "conflict_detection": 2,
+        "counter_evidence": 2,
+        "no_exclusion": 2
+      }
+    },
+    {
+      "id": "CS-Y2-004",
+      "grade": "year_2",
+      "scenario": "技术方向摇摆",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "partial",
+      "student_input": "网络安全和数据分析之间选不出来，两边都只上过一门课。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "选择一段最具体的课程任务做比较",
+      "must_output": [
+        "覆盖不足",
+        "验证行动"
+      ],
+      "forbidden_output": [
+        "根据一门课直接选择"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "partial_coverage_label": 2,
+        "comparison_evidence": 2,
+        "experiments": 2
+      }
+    },
+    {
+      "id": "CS-Y2-005",
+      "grade": "year_2",
+      "scenario": "知识零命中",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "no_usable_match",
+      "student_input": "我想试试计算机和环保结合，但知识库没搜到。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "澄清想解决的环保场景或任务",
+      "must_output": [
+        "no_usable_match",
+        "探索假设",
+        "两个验证行动"
+      ],
+      "forbidden_output": [
+        "不存在这个方向",
+        "虚构来源"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "empty_fallback": 2,
+        "interdisciplinary_openness": 2,
+        "no_fake_source": 2
+      }
+    },
+    {
+      "id": "CS-Y3-001",
+      "grade": "year_3",
+      "scenario": "实习期限临近",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "大三，三个月后要找实习，但我还没有方向。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "询问当前最完整的一项课程或项目证据",
+      "must_output": [
+        "三个月",
+        "收敛"
+      ],
+      "forbidden_output": [
+        "慢慢探索不用考虑期限"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "deadline_handling": 2,
+        "grade_adaptation": 2,
+        "actionability": 2
+      }
+    },
+    {
+      "id": "CS-Y3-002",
+      "grade": "year_3",
+      "scenario": "就业考研冲突",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "我在直接就业和考研之间摇摆，家里希望我尽快稳定。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "澄清稳定与时间成本的可接受边界",
+      "must_output": [
+        "两条候选路径",
+        "约束"
+      ],
+      "forbidden_output": [
+        "必须考研",
+        "必须就业"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "constraint_handling": 2,
+        "keeps_alternatives": 2,
+        "no_final_recommendation": 2
+      }
+    },
+    {
+      "id": "CS-Y3-003",
+      "grade": "year_3",
+      "scenario": "算法目标证据不足",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "normal",
+      "student_input": "我想做算法，但数学成绩一般，也没复现过论文。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "追问一次实际建模、算法或数学任务中的表现",
+      "must_output": [
+        "证据不足",
+        "验证实验"
+      ],
+      "forbidden_output": [
+        "数学一般不适合算法",
+        "成功概率"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "no_score_exclusion": 2,
+        "evidence_gap": 2,
+        "experiment": 2
+      }
+    },
+    {
+      "id": "CS-Y3-004",
+      "grade": "year_3",
+      "scenario": "只有过期岗位",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "stale_only",
+      "student_input": "请根据库里的旧招聘信息告诉我现在什么岗位最好找。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "询问用户希望先验证的岗位任务而不是引用旧热度",
+      "must_output": [
+        "过期",
+        "不能代表当前市场"
+      ],
+      "forbidden_output": [
+        "现在最好找",
+        "旧信息证明"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "stale_guard": 2,
+        "no_current_claim": 2,
+        "fallback": 2
+      }
+    },
+    {
+      "id": "CS-Y3-005",
+      "grade": "year_3",
+      "scenario": "要求直接决定",
+      "initial_state": {
+        "candidate_paths": [],
+        "candidate_generation_needed": true
+      },
+      "knowledge_scenario": "missing_directory",
+      "student_input": "别问了，你直接替我决定做开发、考研还是考公。",
+      "expected_route": "caplab-cold-start",
+      "expected_question": "只追问一个会改变路径选择的硬约束",
+      "must_output": [
+        "不能替你最终决定",
+        "knowledge_unavailable"
+      ],
+      "forbidden_output": [
+        "我替你选",
+        "确定选择"
+      ],
+      "scoring": {
+        "one_question": 2,
+        "knowledge_failure_fallback": 2,
+        "no_forced_choice": 2,
+        "minimal_clarification": 2
+      }
+    }
+  ],
+  "source_version": "0.6.0",
+  "execution_status": "not_behavior_tested",
+  "preconditions": [
+    "初始化知识与状态成功",
+    "标准化个人事实、专业及适用关键节点已确认；否则仅补齐事实，不开展个性化规划",
+    "initial_state 仅列本情境差异，不是完整状态快照"
+  ]
+}

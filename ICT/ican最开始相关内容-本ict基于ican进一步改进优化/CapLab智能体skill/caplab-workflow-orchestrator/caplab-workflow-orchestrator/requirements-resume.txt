@@ -1,0 +1,4 @@
+# Optional Python dependency for resume text extraction and page density checks
+pdfplumber>=0.11,<1
+# System tools (not installable through pip): latexmk, XeLaTeX, ctex/Fandol,
+# geometry, enumitem, hyperref, titlesec; pdfinfo and a PDF renderer.

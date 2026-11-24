@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "metric": "expected sheet or keyword appears in top 5",
+  "target_pass_rate": 0.8,
+  "cases": [
+    {"id": "R01", "query": "计算机考研初试科目", "expected_sheets": ["33_考研项目详情", "18_KB卡片"]},
+    {"id": "R02", "query": "计算机专业研究生复试要求", "expected_sheets": ["33_考研项目详情", "18_KB卡片"]},
+    {"id": "R03", "query": "人工智能方向求职岗位要求", "expected_sheets": ["06_招聘岗位", "07_岗位要求", "18_KB卡片"]},
+    {"id": "R04", "query": "AI Agent 大模型应用开发", "expected_sheets": ["06_招聘岗位", "07_岗位要求", "18_KB卡片"]},
+    {"id": "R05", "query": "体制内计算机专业可以报什么岗位", "expected_sheets": ["34_考公考试批次", "35_考公职位详情", "18_KB卡片"]},
+    {"id": "R06", "query": "考公公务员计算机职位", "expected_sheets": ["35_考公职位详情", "18_KB卡片"]},
+    {"id": "R07", "query": "海外读研计算机申请要求", "expected_sheets": ["37_留学项目详情", "18_KB卡片"]},
+    {"id": "R08", "query": "留学人工智能硕士截止日期", "expected_sheets": ["37_留学项目详情", "38_留学申请轮次"]},
+    {"id": "R09", "query": "大学生怎么比较考研和就业", "expected_sheets": ["10_路径模板", "18_KB卡片", "05_访谈洞察"]},
+    {"id": "R10", "query": "普通本科多路径发展案例", "expected_sheets": ["02_人物案例", "03_本科后去向", "18_KB卡片"]},
+    {"id": "R11", "query": "职业兴趣低成本实验", "expected_sheets": ["12_行动模板", "18_KB卡片"]},
+    {"id": "R12", "query": "信息访谈行动任务模板", "expected_sheets": ["12_行动模板", "18_KB卡片"]},
+    {"id": "R13", "query": "简历和目标岗位差距", "expected_sheets": ["07_岗位要求", "29_要求证据映射", "18_KB卡片"]},
+    {"id": "R14", "query": "能力证据怎么判断准备度", "expected_sheets": ["11_证据规则", "29_要求证据映射", "30_差距判定规则"]},
+    {"id": "R15", "query": "职业路径冲突如何处理", "expected_sheets": ["27_路径冲突", "18_KB卡片"]},
+    {"id": "R16", "query": "考研报名窗口和时间节点", "expected_sheets": ["25_窗口实例", "26_申请事件", "33_考研项目详情"]},
+    {"id": "R17", "query": "留学项目学费语言成绩材料", "expected_sheets": ["37_留学项目详情", "18_KB卡片"]},
+    {"id": "R18", "query": "公务员考试批次报名时间", "expected_sheets": ["34_考公考试批次", "18_KB卡片"]},
+    {"id": "R19", "query": "软件开发岗位核心职责", "expected_sheets": ["06_招聘岗位", "07_岗位要求", "18_KB卡片"]},
+    {"id": "R20", "query": "项目经历如何成为求职证据", "expected_sheets": ["29_要求证据映射", "11_证据规则", "18_KB卡片"]}
+  ]
+}

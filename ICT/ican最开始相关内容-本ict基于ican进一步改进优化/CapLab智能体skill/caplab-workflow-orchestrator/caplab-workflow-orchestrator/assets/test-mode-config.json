@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "create_prefix": "上海师范大学商学院中法计算机测试存档 Save",
+  "read_prefix": "Read Save",
+  "access_code": "31415926",
+  "save_id_pattern": "SAVE-[0-9]{6}",
+  "password_semantics": "activation_code_not_authentication"
+}

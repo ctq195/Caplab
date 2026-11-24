@@ -1,0 +1,4 @@
+interface:
+  display_name: "CapLab 统一职业探索工作流"
+  short_description: "五阶段生涯探索、按需对话渲染与知识库增量更新"
+  default_prompt: "Use $caplab-workflow-orchestrator to start or continue my CapLab workflow in this DuMate workspace."

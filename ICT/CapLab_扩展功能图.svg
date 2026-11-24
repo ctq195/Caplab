@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1160" viewBox="0 0 1600 1160"><rect width="1600" height="1160" fill="#f8fafc"/><style>text{font-family:Microsoft YaHei,Arial,sans-serif;fill:#172554}.t{font-size:34px;font-weight:700}.h{font-size:23px;font-weight:600}.n{font-size:19px}.sub{font-size:17px;fill:#64748b}</style><text x="55" y="65" class="t">CapLab · 多 Agent 协作生态</text><text x="55" y="102" class="sub">技术 × 业务流程 × 用户多元体验｜按任务组合、并行与反馈，不是固定执行链</text>
+<rect x="35" y="155" width="330" height="840" rx="20" fill="#eff6ff" stroke="#cbd5e1"/><text x="57" y="191" class="h">用户多元体验</text>
+<rect x="60" y="225" width="280" height="135" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="82" y="261" class="h">自由表达</text>
+<text x="82" y="295" class="n">文字 · 网页语音</text>
+<text x="82" y="324" class="n">材料 · 作品 · 视频</text>
+<rect x="60" y="400" width="280" height="135" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="82" y="436" class="h">理解与掌控</text>
+<text x="82" y="470" class="n">解释 · 比较 · 纠错</text>
+<text x="82" y="499" class="n">确认 · 取消 · 查看进度</text>
+<rect x="60" y="575" width="280" height="135" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="82" y="611" class="h">成长成果</text>
+<text x="82" y="645" class="n">简历 · 面试 · 作品集</text>
+<text x="82" y="674" class="n">学习反馈 · 跨设备续接</text>
+<rect x="60" y="750" width="280" height="180" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="82" y="786" class="h">人与人协作</text>
+<text x="82" y="820" class="n">导师 · 教师 · 同伴</text>
+<text x="82" y="849" class="n">授权摘要 · 人工复核</text>
+<text x="82" y="878" class="n">无障碍与个性化体验</text>
+<rect x="1235" y="155" width="330" height="840" rx="20" fill="#f0fdf4" stroke="#cbd5e1"/><text x="1257" y="191" class="h">业务场景组合</text>
+<rect x="1260" y="225" width="280" height="135" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="1282" y="261" class="h">探索与路径</text>
+<text x="1282" y="295" class="n">访谈 · 画像 · 方案比较</text>
+<text x="1282" y="324" class="n">按证据调整方向</text>
+<rect x="1260" y="400" width="280" height="135" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="1282" y="436" class="h">机会与行动</text>
+<text x="1282" y="470" class="n">岗位 · 竞赛 · 科研</text>
+<text x="1282" y="499" class="n">订阅 · 任务 · 资源对接</text>
+<rect x="1260" y="575" width="280" height="135" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="1282" y="611" class="h">学习与项目</text>
+<text x="1282" y="645" class="n">能力缺口 · 微项目</text>
+<text x="1282" y="674" class="n">产物 · 评审 · 实训</text>
+<rect x="1260" y="750" width="280" height="180" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="1282" y="786" class="h">协同与复盘</text>
+<text x="1282" y="820" class="n">教师指导 · 校友资源</text>
+<text x="1282" y="849" class="n">反馈改变画像与决策</text>
+<text x="1282" y="878" class="n">循环进入需要的环节</text>
+<path d="M800 420 L800 330" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<path d="M650 490 L605 490" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<path d="M950 490 L995 490" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<path d="M700 560 L600 660" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<path d="M900 560 L1000 660" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<path d="M800 560 L800 830" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<path d="M365 600 L425 600" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<path d="M1175 600 L1235 600" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<rect x="425" y="170" width="750" height="160" rx="20" fill="#faf5ff" stroke="#cbd5e1"/><text x="447" y="206" class="h">技术｜多 Agent 执行网络</text>
+<text x="447" y="240" class="n">访谈 / 画像 Agent     知识 / 机会 Agent</text>
+<text x="447" y="269" class="n">路径分析 Agent        行动 / 复盘 Agent</text>
+<text x="447" y="298" class="n">限定上下文与工具 · 并行结果汇合</text>
+<rect x="650" y="420" width="300" height="140" rx="20" fill="#dbeafe" stroke="#cbd5e1"/><text x="672" y="456" class="h">LangGraph 总控</text>
+<text x="672" y="490" class="n">调度 · 分支 · 审核</text>
+<text x="672" y="519" class="n">状态保存 · 暂停恢复</text>
+<rect x="400" y="420" width="205" height="140" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="422" y="456" class="h">LangChain</text>
+<text x="422" y="490" class="n">专业任务执行</text>
+<text x="422" y="519" class="n">理解 / 检索 / 解释</text>
+<rect x="995" y="420" width="205" height="140" rx="20" fill="#ffffff" stroke="#cbd5e1"/><text x="1017" y="456" class="h">Jev 决策</text>
+<text x="1017" y="490" class="n">工具选择 / 路由</text>
+<text x="1017" y="519" class="n">困难任务回退 LLM</text>
+<rect x="425" y="660" width="310" height="130" rx="20" fill="#fff7ed" stroke="#cbd5e1"/><text x="447" y="696" class="h">审核与人工介入</text>
+<text x="447" y="730" class="n">规则校验 · 权限边界</text>
+<text x="447" y="759" class="n">通过 / 退回 / 补证据</text>
+<rect x="865" y="660" width="310" height="130" rx="20" fill="#fff7ed" stroke="#cbd5e1"/><text x="887" y="696" class="h">工具运行器</text>
+<text x="887" y="730" class="n">检索 / 任务 / 资源接口</text>
+<text x="887" y="759" class="n">执行结果 · 失败反馈</text>
+<path d="M735 725 L865 725" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+<rect x="425" y="830" width="750" height="165" rx="20" fill="#f0fdfa" stroke="#cbd5e1"/><text x="447" y="866" class="h">共享数据与云管控</text>
+<text x="447" y="900" class="n">证据版本 · 记忆 · 状态 · AgentArts 托管</text>
+<text x="447" y="929" class="n">预算 · Trace · 身份权限 · 评估 · 恢复</text>
+<text x="447" y="958" class="n">技术验收：工具正确性 + 任务成功率 + 成功任务成本</text>
+<text x="55" y="1050" class="sub">虚线表示协作与反馈关系；不是执行顺序，也不表示每次请求都调用全部 Agent。</text><text x="55" y="1090" class="sub">目标蓝图，非已实现清单。Jev 决策与 LLM 执行协同；效率与准确性按具体任务验证。2026-11-09</text></svg>

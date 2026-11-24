@@ -1,6 +1,5 @@
 /.workbuddy/
 /ican/
-/ICT/
 /LangChian-Graph两者协作mermaid-diagram.png
 
 .env
@@ -23,3 +22,4 @@ __pycache__/
 *.tar
 *.tgz
 *.zip
+!/ICT/project_20261122_113008_CaplabWeb.tar

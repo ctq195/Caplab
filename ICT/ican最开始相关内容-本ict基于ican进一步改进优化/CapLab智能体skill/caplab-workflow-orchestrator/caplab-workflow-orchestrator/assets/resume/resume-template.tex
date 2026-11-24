@@ -1,0 +1,45 @@
+% CapLab resume layout adapted from the user-supplied 260608 TeX reference.
+\documentclass[10pt,a4paper,fontset=fandol]{ctexart}
+
+\usepackage[margin=@@MARGIN_CM@@cm]{geometry}
+\usepackage{enumitem}
+\usepackage[hidelinks,unicode]{hyperref}
+\usepackage{titlesec}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{1em}
+\renewcommand{\baselinestretch}{@@BASELINE_STRETCH@@}
+
+\setlist[itemize]{
+leftmargin=1.25em,
+itemsep=@@ITEM_SEP_EM@@em,
+topsep=@@TOP_SEP_EM@@em,
+parsep=0pt,
+partopsep=0pt
+}
+
+\titleformat{\section}{\large\bfseries}{}{0pt}{}[\titlerule]
+\titlespacing*{\section}{0pt}{@@SECTION_BEFORE_EM@@em}{@@SECTION_AFTER_EM@@em}
+
+\newcommand{\ResumeHeader}[3]{%
+\begin{center}
+{\LARGE \textbf{#1}}\par
+#2\par
+\if\relax\detokenize{#3}\relax\else #3\par\fi
+\end{center}
+\vspace{@@HEADER_AFTER_EM@@em}
+}
+
+\newcommand{\ResumeSection}[1]{\section*{#1}}
+\newcommand{\ResumeEntry}[3]{%
+\textbf{#1}\hfill #2\par
+\if\relax\detokenize{#3}\relax\else #3\par\vspace{@@DESC_AFTER_EM@@em}\fi
+}
+\newcommand{\ResumeLine}[2]{\item \textbf{#1：}#2}
+
+\begin{document}
+\fontsize{@@BODY_SIZE_PT@@}{@@LEADING_PT@@}\selectfont
+@@BODY@@
+\end{document}

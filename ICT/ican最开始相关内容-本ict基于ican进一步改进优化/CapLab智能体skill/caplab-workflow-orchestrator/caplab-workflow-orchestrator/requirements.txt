@@ -1,0 +1,11 @@
+# CapLab workflow-orchestrator v2.0.1 — runtime dependencies (evaluator side)
+# Total ~20 MB, no torch, no HuggingFace download.
+# The int8 ONNX embedding model, JSON knowledge cards and prebuilt indexes
+# ship inside the Skill bundle, so the evaluator never downloads a model.
+numpy==2.2.3
+onnxruntime==1.20.1
+tokenizers==0.20.3
+
+# Maintainer-only (building indexes directly from xlsx): pip install openpyxl
+# Preferred maintainer path needs no openpyxl at all:
+#   export_kb_cards.py (xlsx -> JSON cards) -> build_prebuilt_index.py --cards

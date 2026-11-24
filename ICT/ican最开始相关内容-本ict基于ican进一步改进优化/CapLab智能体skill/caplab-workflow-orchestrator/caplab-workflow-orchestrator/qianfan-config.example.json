@@ -1,0 +1,8 @@
+{
+  "base_url": "https://qianfan.baidubce.com/v2",
+  "api_key": "bce-YOUR-QIANFAN-KEY",
+  "embedding_model": "bge-large-zh",
+  "embedding_dimension": 1024,
+  "chat_model": "ernie-speed-128k",
+  "timeout": 30
+}

@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "KREG-001",
+      "scenario": "normal_hit",
+      "expected": {
+        "command_succeeds": true,
+        "coverage_status": [
+          "partial",
+          "sufficient"
+        ],
+        "includes_source_ids": true
+      }
+    },
+    {
+      "id": "KREG-002",
+      "scenario": "zero_match",
+      "expected": {
+        "command_succeeds": true,
+        "coverage_status": "no_usable_match",
+        "results": []
+      }
+    },
+    {
+      "id": "KREG-003",
+      "scenario": "stale_only",
+      "expected": {
+        "stale_excluded": true,
+        "coverage_status": "no_usable_match",
+        "does_not_claim_current": true
+      }
+    },
+    {
+      "id": "KREG-004",
+      "scenario": "missing_knowledge_directory",
+      "expected": {
+        "command_fails": true,
+        "error_contains": "knowledge unavailable",
+        "cold_start_status": "knowledge_unavailable"
+      }
+    },
+    {
+      "id": "KREG-005",
+      "scenario": "private_request_field",
+      "expected": {
+        "command_fails": true,
+        "error_contains": "private field",
+        "does_not_retrieve": true
+      }
+    }
+  ],
+  "source_version": "0.6.0",
+  "execution_status": "not_behavior_tested"
+}

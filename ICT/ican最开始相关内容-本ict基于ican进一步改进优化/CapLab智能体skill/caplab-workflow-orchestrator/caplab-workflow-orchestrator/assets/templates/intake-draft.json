@@ -1,0 +1,66 @@
+{
+  "decision_question": null,
+  "candidate_paths": [],
+  "candidate_generation_needed": true,
+  "deadline": null,
+  "major": {
+    "name": null,
+    "code": null,
+    "status": "unconfirmed",
+    "source_ids": []
+  },
+  "personal_facts": {
+    "gender": {
+      "value": null,
+      "status": "unconfirmed",
+      "source_ids": []
+    },
+    "age": {
+      "value": null,
+      "status": "unconfirmed",
+      "source_ids": [],
+      "as_of": null
+    },
+    "education_level": {
+      "value": null,
+      "status": "unconfirmed",
+      "source_ids": []
+    },
+    "institution_name": {
+      "value": null,
+      "status": "unconfirmed",
+      "source_ids": []
+    },
+    "institution_tier": {
+      "value": null,
+      "status": "unconfirmed",
+      "source_ids": [],
+      "classification_basis": null
+    },
+    "enrollment_year": {
+      "value": null,
+      "status": "unconfirmed",
+      "source_ids": []
+    },
+    "graduation_year": {
+      "value": null,
+      "status": "unconfirmed",
+      "source_ids": [],
+      "kind": "expected"
+    },
+    "key_timepoints": {
+      "status": "unconfirmed",
+      "source_ids": [],
+      "events": []
+    }
+  },
+  "sources": [],
+  "records": [],
+  "constraints": [],
+  "conflicts": [],
+  "unknowns": [],
+  "intake_ready": false,
+  "confirmation_status": "unconfirmed",
+  "problem_designability": null,
+  "desired_output": null
+}

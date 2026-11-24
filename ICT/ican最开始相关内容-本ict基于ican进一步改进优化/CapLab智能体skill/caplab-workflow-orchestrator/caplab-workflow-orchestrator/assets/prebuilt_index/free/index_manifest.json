@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "files": {
+    "claims.json": "e2642c4d641b2dfccbc3c76905ad40fbb5c1908b9e71720aef56a5edf63aff6c",
+    "documents.json": "4877ac9df0deabaf839bdd343a51ed0a45d17f97153c39dcdb17bd8ca32807b4",
+    "embeddings.npy": "1c25eda57c7695f84da94399dda0a67591be38e1979002d4f7f209d170ee84e4",
+    "index_meta.json": "85fcfdaba2d7faa5e4d099209c919daadc8c0c020a76ecc850d0192f5e7c072d",
+    "sources.json": "d498c12638a4623090f2d6632b6df3f67c772a58d896429cb983ccc6ae165d02",
+    "sparse_index.json": "c647190e0ac7d7116552159e3779a4a357fb7ae10da5b407bcc97143da8c7a2d",
+    "tags.json": "b9772753957431f31e001b4eac40862d67cb30ba81a0803cdfb946e91f7afbe2"
+  }
+}

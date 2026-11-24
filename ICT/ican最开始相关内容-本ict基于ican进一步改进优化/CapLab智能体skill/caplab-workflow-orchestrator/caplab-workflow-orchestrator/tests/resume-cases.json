@@ -1,0 +1,42 @@
+{
+  "version": "2.2.0",
+  "scope": "Resume capability behavior cases; local contracts are testable, DuMate dialogue behavior remains pending.",
+  "test_cases": [
+    {
+      "id": "RESUME-ONE-PAGE-REGRESSION",
+      "input": "fixtures/resume-synthetic.json",
+      "expected": {"artifacts": ["resume-content.json", "resume.tex", "resume.pdf", "resume-scorecard.md"], "pages": 1, "docx": false, "no_new_facts": true},
+      "execution_status": "local_pipeline_tested"
+    },
+    {
+      "id": "RESUME-SPARSE-FACTS",
+      "input": "Education only; no project results or dates",
+      "expected": {"questions_max": 3, "does_not_invent": true, "unconfirmed_facts_excluded": true, "content_height_threshold": 0.75, "relaxed_spacing_first": true, "descriptions_from_confirmed_evidence_only": true},
+      "execution_status": "local_pipeline_tested"
+    },
+    {
+      "id": "RESUME-DENSE-ONE-PAGE",
+      "input": "More confirmed high-value entries than one readable page can hold",
+      "expected": {"minimum_profile": "tight", "font_floor_pt": 9, "margin_floor_mm": 12.7, "requests_content_reduction": true},
+      "execution_status": "local_pipeline_tested"
+    },
+    {
+      "id": "RESUME-TWO-PAGE-EXCEPTION",
+      "input": "Confirmed critical content remains after semantic pruning",
+      "expected": {"target_pages": 2, "requires_two_page_reason": true},
+      "execution_status": "contract_tested"
+    },
+    {
+      "id": "RESUME-NO-JD",
+      "input": "Role title without a JD",
+      "expected": {"tailoring_mode": "general_direction", "must_label_general_version": true},
+      "execution_status": "contract_tested"
+    },
+    {
+      "id": "RESUME-NO-LATEX",
+      "input": "Valid content with unavailable latexmk",
+      "expected": {"keeps_tex": true, "pdf": false, "export_status": "generated_unverified"},
+      "execution_status": "local_pipeline_tested"
+    }
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "meta": {
+    "title": "虚构测试样例 - 非真实个人简历",
+    "language": "zh-CN",
+    "target_job": "AI应用开发工程师（通用岗位方向版）",
+    "tailoring_mode": "general_direction",
+    "target_pages": 1
+  },
+  "candidate": {
+    "name": "示例同学",
+    "headline": "示例大学 | 计算机科学与技术 | 本科",
+    "contact": [
+      "电话：已脱敏",
+      "邮箱：已脱敏"
+    ]
+  },
+  "sections": [
+    {
+      "id": "education",
+      "title": "教育背景",
+      "type": "entries",
+      "items": [
+        {
+          "id": "edu-example",
+          "title": "示例大学",
+          "subtitle": "计算机科学与技术本科",
+          "location": "上海",
+          "date": "2024.09 - 至今",
+          "evidence_status": "direct",
+          "confirmed": true,
+          "source_ids": [
+            "SRC-SYNTHETIC-001"
+          ],
+          "bullets": [
+            {
+              "text": "GPA 3.31/4.0，专业排名 4/37；Python 程序设计 95 分、Java 程序设计 96 分。",
+              "evidence_status": "direct",
+              "confirmed": true,
+              "source_ids": [
+                "SRC-SYNTHETIC-001"
+              ]
+            },
+            {
+              "text": "参与跨文化课程学习；完成外语课程展示。",
+              "evidence_status": "direct",
+              "confirmed": true,
+              "source_ids": [
+                "SRC-SYNTHETIC-001"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skills",
+      "title": "专业技能",
+      "type": "lines",
+      "items": [
+        {
+          "id": "skill-programming",
+          "label": "编程",
+          "text": "C/C++、Python、Java、SQL；掌握 STL、基础算法、面向对象与数据库增删改查。",
+          "evidence_status": "direct",
+          "confirmed": true,
+          "source_ids": [
+            "SRC-SYNTHETIC-001"
+          ]
+        },
+        {
+          "id": "skill-ai",
+          "label": "AI 应用",
+          "text": "使用 Claude、Claude Code、Codex、扣子，并用扣子搭建 Agent 工作流。",
+          "evidence_status": "direct",
+          "confirmed": true,
+          "source_ids": [
+            "SRC-SYNTHETIC-001"
+          ]
+        },
+        {
+          "id": "skill-data",
+          "label": "数据分析",
+          "text": "使用 Python、SPSS、Matlab 完成数据清洗、算法实现与可视化，并使用 RPA 采集公开数据。",
+          "evidence_status": "direct",
+          "confirmed": true,
+          "source_ids": [
+            "SRC-SYNTHETIC-001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "experience",
+      "title": "项目与竞赛经历",
+      "type": "entries",
+      "items": [
+        {
+          "id": "exp-agent",
+          "title": "校园 AI 智能体演示赛 - 一等奖",
+          "subtitle": "AI 智能体 Demo",
+          "location": "",
+          "date": "2026",
+          "evidence_status": "direct",
+          "confirmed": true,
+          "source_ids": [
+            "SRC-SYNTHETIC-001"
+          ],
+          "bullets": [
+            {
+              "text": "在 48 小时内参与选题设计、扣子工作流搭建、Demo 迭代与路演汇报，完成从概念到展示的完整交付。",
+              "evidence_status": "direct",
+              "confirmed": true,
+              "source_ids": [
+                "SRC-SYNTHETIC-001"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "exp-coding",
+          "title": "校园程序设计竞赛省赛 - C/C++ 赛道三等奖",
+          "subtitle": "算法与程序设计竞赛",
+          "location": "",
+          "date": "",
+          "evidence_status": "direct",
+          "confirmed": true,
+          "source_ids": [
+            "SRC-SYNTHETIC-001"
+          ],
+          "bullets": [
+            {
+              "text": "使用 C/C++ 完成算法设计与编程实现，获得省赛三等奖。",
+              "evidence_status": "direct",
+              "confirmed": true,
+              "source_ids": [
+                "SRC-SYNTHETIC-001"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "exp-modeling",
+          "title": "数学建模竞赛",
+          "subtitle": "代码实现与数据分析",
+          "location": "",
+          "date": "",
+          "evidence_status": "direct",
+          "confirmed": true,
+          "source_ids": [
+            "SRC-SYNTHETIC-001"
+          ],
+          "bullets": [
+            {
+              "text": "承担代码编写、算法实现、数据清洗与结果可视化，将数学模型转化为可执行程序。",
+              "evidence_status": "direct",
+              "confirmed": true,
+              "source_ids": [
+                "SRC-SYNTHETIC-001"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "exp-market",
+          "title": "校园市场调研",
+          "subtitle": "数据处理与可视化",
+          "location": "",
+          "date": "",
+          "evidence_status": "direct",
+          "confirmed": true,
+          "source_ids": [
+            "SRC-SYNTHETIC-001"
+          ],
+          "bullets": [
+            {
+              "text": "使用 RPA 采集公开数据，完成数据清洗、交叉分析、统计处理与图表表达。",
+              "evidence_status": "direct",
+              "confirmed": true,
+              "source_ids": [
+                "SRC-SYNTHETIC-001"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "selected_evidence": [
+    "SRC-SYNTHETIC-001"
+  ],
+  "selection_log": [
+    {
+      "item_id": "edu-course-table",
+      "decision": "hide",
+      "reason": "完整课程表占版面，仅保留对目标方向最有区分度的两门编程成绩。"
+    },
+    {
+      "item_id": "exp-agent",
+      "decision": "keep",
+      "reason": "同时覆盖 AI 工具、Agent 工作流、快速交付和竞赛认可。"
+    },
+    {
+      "item_id": "exp-coding",
+      "decision": "keep",
+      "reason": "提供算法与 C/C++ 的外部认可证据。"
+    }
+  ],
+  "open_questions": [
+    "校园程序设计竞赛、数学建模和校园分别发生在什么时间？",
+    "AI 智能体项目中你个人负责的关键节点和可核验结果是什么？",
+    "是否有代码仓库、在线 Demo 或作品集链接可以加入联系方式？"
+  ],
+  "scorecard": {
+    "hard_gate_passed": true,
+    "optimization_round": 2,
+    "dimensions": {
+      "job_match": {
+        "score": 20,
+        "evidence": [
+          "AI Agent 工作流和多语言编程经历与通用 AI 应用开发方向相关"
+        ],
+        "deductions": [
+          "未提供真实 JD，不能核验具体岗位必备项"
+        ]
+      },
+      "technical_criticality": {
+        "score": 17,
+        "evidence": [
+          "技术出现在 Agent 搭建、算法实现、数据清洗和可视化任务中"
+        ],
+        "deductions": [
+          "尚缺架构决策、接口或部署细节"
+        ]
+      },
+      "quantification": {
+        "score": 11,
+        "evidence": [
+          "包含 48 小时、GPA、排名、课程成绩和竞赛奖项"
+        ],
+        "deductions": [
+          "项目质量、效率或用户结果缺少指标"
+        ]
+      },
+      "information_density": {
+        "score": 14,
+        "evidence": [
+          "课程表已压缩，技能与经历避免重复展开"
+        ],
+        "deductions": [
+          "部分竞赛结果仍较概括"
+        ]
+      },
+      "readability": {
+        "score": 14,
+        "evidence": [
+          "单栏、三层结构、日期统一右对齐"
+        ],
+        "deductions": [
+          "样本内容较少，页面下半部留白较多"
+        ]
+      },
+      "fact_credibility": {
+        "score": 10,
+        "evidence": [
+          "正文仅改写输入材料中的事实，缺失时间留在待确认问题中"
+        ],
+        "deductions": []
+      }
+    }
+  }
+}
