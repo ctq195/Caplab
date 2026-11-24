@@ -1,6 +1,7 @@
+import { isVoiceOriginAllowed } from '@/lib/voice-origin';
+
 export async function POST(request: Request) {
-  const origin = request.headers.get('origin');
-  if (origin && new URL(request.url).origin !== origin) return new Response(null, { status: 403 });
+  if (!isVoiceOriginAllowed(request)) return Response.json({ error: '语音请求来源与当前站点不一致，请从 CapLab 页面重试。' }, { status: 403 });
   const body = await request.json().catch(() => null);
   const text = typeof body?.text === 'string' ? body.text.trim() : '';
   if (!text || text.length > 4000) return Response.json({ error: '语音文本长度无效' }, { status: 400 });

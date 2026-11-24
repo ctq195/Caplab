@@ -1,15 +1,17 @@
+import { isVoiceOriginAllowed } from '@/lib/voice-origin';
+
 export async function POST(request: Request) {
-  const origin = request.headers.get('origin');
-  if (origin && origin !== new URL(request.url).origin) return new Response(null, { status: 403 });
+  if (!isVoiceOriginAllowed(request)) return Response.json({ error: '语音请求来源与当前站点不一致，请从 CapLab 页面重试。' }, { status: 403 });
   const key = process.env.MOSS_API_KEY;
   if (!key) return Response.json({ error: '语音识别尚未配置，可以先打字。' }, { status: 503 });
   const limit = 8 * 1024 * 1024;
-  if (Number(request.headers.get('content-length')) > limit) return new Response(null, { status: 413 });
+  if (Number(request.headers.get('content-length')) > limit) return Response.json({ error: '录音超过 8 MB，请分段说。' }, { status: 413 });
   const type = (request.headers.get('content-type') || '').split(';')[0];
   const formats: Record<string, string> = { 'audio/webm': 'webm', 'audio/mp4': 'm4a', 'audio/ogg': 'ogg', 'audio/wav': 'wav' };
-  if (!Object.hasOwn(formats, type)) return new Response(null, { status: 415 });
+  if (!Object.hasOwn(formats, type)) return Response.json({ error: '当前录音格式无法识别，请更换浏览器后重试。' }, { status: 415 });
   const clip = await request.blob();
-  if (!clip.size || clip.size > limit) return new Response(null, { status: clip.size ? 413 : 400 });
+  if (!clip.size) return Response.json({ error: '录音为空，请检查麦克风后再试。' }, { status: 400 });
+  if (clip.size > limit) return Response.json({ error: '录音超过 8 MB，请分段说。' }, { status: 413 });
   const form = new FormData();
   form.set('file', clip, 'utterance.' + formats[type]);
   form.set('model', 'moss-transcribe-diarize-pro');
