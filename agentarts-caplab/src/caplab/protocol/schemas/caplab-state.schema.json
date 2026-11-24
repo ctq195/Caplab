@@ -1,0 +1,1210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://caplab.local/schemas/caplab-state-1.1.0.json",
+  "title": "CapLab State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "state_id",
+    "revision",
+    "parent_revision",
+    "active_stage",
+    "workflow_status",
+    "sections",
+    "section_meta",
+    "id_registry",
+    "confirmation_events",
+    "invalidations",
+    "applied_patch_ids",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "state_id": {
+      "type": "string",
+      "pattern": "^CAP-[0-9]{6}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "parent_revision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "active_stage": {
+      "enum": [
+        "profile_intake",
+        "profile_confirmation",
+        "path_convergence",
+        "path_evidence_cycle",
+        "evidence_review",
+        "closed",
+        "blocked"
+      ]
+    },
+    "workflow_status": {
+      "enum": [
+        "active",
+        "waiting_confirmation",
+        "paused",
+        "closed",
+        "blocked",
+        "invalid"
+      ]
+    },
+    "sections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intake",
+        "profile",
+        "path_decision",
+        "cycle_plan",
+        "reviews"
+      ],
+      "properties": {
+        "intake": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "decision_question": {},
+            "problem_designability": {},
+            "candidate_generation_needed": {},
+            "records": {},
+            "deadline": {},
+            "unknowns": {},
+            "constraints": {},
+            "confirmation_status": {
+              "enum": [
+                "unconfirmed",
+                "confirmed",
+                "revision_requested",
+                "partial"
+              ]
+            },
+            "intake_ready": {
+              "type": "boolean"
+            },
+            "psychological_context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "observation_ids",
+                "hypothesis_ids",
+                "revision_requests"
+              ],
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "enabled",
+                    "skipped",
+                    "stop_saving"
+                  ]
+                },
+                "observation_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(INT|PRO|OBS)-[0-9]{6}$"
+                  }
+                },
+                "hypothesis_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^HYP-[0-9]{6}$"
+                  }
+                },
+                "revision_requests": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            },
+            "conflicts": {
+              "type": "array"
+            },
+            "candidate_paths": {},
+            "major": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "code",
+                "status",
+                "source_ids"
+              ],
+              "properties": {
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "unconfirmed",
+                    "confirmed",
+                    "conflicted",
+                    "declined"
+                  ]
+                },
+                "source_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^SRC-[0-9]{6}$"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            },
+            "personal_facts": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "gender": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "status",
+                    "source_ids"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1
+                    },
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                },
+                "age": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "status",
+                    "source_ids",
+                    "as_of"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 130
+                    },
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    },
+                    "as_of": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                    }
+                  }
+                },
+                "education_level": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "status",
+                    "source_ids"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1
+                    },
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                },
+                "institution_name": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "status",
+                    "source_ids"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1
+                    },
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                },
+                "institution_tier": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "status",
+                    "source_ids",
+                    "classification_basis"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1
+                    },
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    },
+                    "classification_basis": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1
+                    }
+                  }
+                },
+                "enrollment_year": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "status",
+                    "source_ids"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1900,
+                      "maximum": 2200
+                    },
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                },
+                "graduation_year": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "status",
+                    "source_ids",
+                    "kind"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1900,
+                      "maximum": 2200
+                    },
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    },
+                    "kind": {
+                      "enum": [
+                        "expected",
+                        "actual"
+                      ]
+                    }
+                  }
+                },
+                "birth_date": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "status",
+                    "source_ids"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1
+                    },
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                },
+                "key_timepoints": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "status",
+                    "source_ids",
+                    "events"
+                  ],
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed",
+                        "conflicted",
+                        "declined"
+                      ]
+                    },
+                    "source_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^SRC-[0-9]{6}$"
+                      },
+                      "uniqueItems": true
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "name",
+                          "kind",
+                          "date",
+                          "precision",
+                          "status",
+                          "source_ids",
+                          "related_graduation_year",
+                          "eligibility_status",
+                          "rule_source_ids"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "kind": {
+                            "enum": [
+                              "preparation",
+                              "application",
+                              "exam",
+                              "program_entry",
+                              "internship",
+                              "employment",
+                              "other"
+                            ]
+                          },
+                          "date": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "precision": {
+                            "enum": [
+                              "year",
+                              "month",
+                              "day"
+                            ]
+                          },
+                          "status": {
+                            "enum": [
+                              "unconfirmed",
+                              "confirmed",
+                              "conflicted",
+                              "declined"
+                            ]
+                          },
+                          "source_ids": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "pattern": "^SRC-[0-9]{6}$"
+                            },
+                            "uniqueItems": true
+                          },
+                          "related_graduation_year": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "minimum": 1900,
+                            "maximum": 2200
+                          },
+                          "eligibility_status": {
+                            "enum": [
+                              "unknown",
+                              "not_applicable",
+                              "verified"
+                            ]
+                          },
+                          "rule_source_ids": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "pattern": "^SRC-[0-9]{6}$"
+                            },
+                            "uniqueItems": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "gender",
+                "age",
+                "education_level",
+                "institution_name",
+                "institution_tier",
+                "enrollment_year",
+                "graduation_year",
+                "key_timepoints"
+              ]
+            },
+            "desired_output": {},
+            "decision_status": {},
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "required": [
+                  "intake_ready"
+                ],
+                "properties": {
+                  "intake_ready": {
+                    "const": true
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "personal_facts",
+                  "major",
+                  "confirmation_status",
+                  "decision_question"
+                ],
+                "properties": {
+                  "confirmation_status": {
+                    "const": "confirmed"
+                  },
+                  "decision_question": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "conflicts": {
+                    "maxItems": 0
+                  },
+                  "major": {
+                    "properties": {
+                      "status": {
+                        "const": "confirmed"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "source_ids": {
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "personal_facts": {
+                    "properties": {
+                      "gender": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          },
+                          "source_ids": {
+                            "minItems": 1
+                          },
+                          "value": {
+                            "not": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      "age": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          },
+                          "source_ids": {
+                            "minItems": 1
+                          },
+                          "value": {
+                            "not": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      "education_level": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          },
+                          "source_ids": {
+                            "minItems": 1
+                          },
+                          "value": {
+                            "not": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      "institution_name": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          },
+                          "source_ids": {
+                            "minItems": 1
+                          },
+                          "value": {
+                            "not": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      "institution_tier": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          },
+                          "source_ids": {
+                            "minItems": 1
+                          },
+                          "value": {
+                            "not": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      "enrollment_year": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          },
+                          "source_ids": {
+                            "minItems": 1
+                          },
+                          "value": {
+                            "not": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      "graduation_year": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          },
+                          "source_ids": {
+                            "minItems": 1
+                          },
+                          "value": {
+                            "not": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      "key_timepoints": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          },
+                          "source_ids": {
+                            "minItems": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "profile": {
+          "type": "object",
+          "properties": {
+            "decision_timeline": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/decision_timepoint"
+              }
+            },
+            "psychological_context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "observation_ids",
+                "hypothesis_ids",
+                "revision_requests"
+              ],
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "enabled",
+                    "skipped",
+                    "stop_saving"
+                  ]
+                },
+                "observation_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(INT|PRO|OBS)-[0-9]{6}$"
+                  }
+                },
+                "hypothesis_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^HYP-[0-9]{6}$"
+                  }
+                },
+                "revision_requests": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "path_decision": {
+          "type": "object",
+          "properties": {
+            "decision_timeline": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/decision_timepoint"
+              }
+            },
+            "psychological_context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "observation_ids",
+                "hypothesis_ids",
+                "revision_requests"
+              ],
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "enabled",
+                    "skipped",
+                    "stop_saving"
+                  ]
+                },
+                "observation_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(INT|PRO|OBS)-[0-9]{6}$"
+                  }
+                },
+                "hypothesis_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^HYP-[0-9]{6}$"
+                  }
+                },
+                "revision_requests": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cycle_plan": {
+          "type": "object",
+          "properties": {
+            "decision_timeline": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/decision_timepoint"
+              }
+            },
+            "psychological_context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "observation_ids",
+                "hypothesis_ids",
+                "revision_requests"
+              ],
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "enabled",
+                    "skipped",
+                    "stop_saving"
+                  ]
+                },
+                "observation_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(INT|PRO|OBS)-[0-9]{6}$"
+                  }
+                },
+                "hypothesis_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^HYP-[0-9]{6}$"
+                  }
+                },
+                "revision_requests": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "decision_timeline": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/decision_timepoint"
+                }
+              },
+              "psychological_context": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mode",
+                  "observation_ids",
+                  "hypothesis_ids",
+                  "revision_requests"
+                ],
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "enabled",
+                      "skipped",
+                      "stop_saving"
+                    ]
+                  },
+                  "observation_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^(INT|PRO|OBS)-[0-9]{6}$"
+                    }
+                  },
+                  "hypothesis_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^HYP-[0-9]{6}$"
+                    }
+                  },
+                  "revision_requests": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "section_meta": {
+      "type": "object",
+      "required": [
+        "intake",
+        "profile",
+        "path_decision",
+        "cycle_plan",
+        "reviews"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(intake|profile|path_decision|cycle_plan|reviews)$": {
+          "type": "object",
+          "required": [
+            "status",
+            "section_revision",
+            "owner_skill"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "empty",
+                "draft",
+                "confirmed",
+                "accepted",
+                "active",
+                "partial",
+                "stale",
+                "closed"
+              ]
+            },
+            "section_revision": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "owner_skill": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "id_registry": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "confirmation_events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/confirmation"
+      }
+    },
+    "invalidations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "applied_patch_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^PAT-[0-9]{6}$"
+      },
+      "uniqueItems": true
+    },
+    "rollback_of": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "updated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "confirmation": {
+      "type": "object",
+      "required": [
+        "confirmation_id",
+        "patch_id",
+        "decision",
+        "scope",
+        "confirmation_text",
+        "recorded_at"
+      ],
+      "properties": {
+        "confirmation_id": {
+          "type": "string",
+          "pattern": "^CFM-[0-9]{6}$"
+        },
+        "patch_id": {
+          "type": "string",
+          "pattern": "^PAT-[0-9]{6}$"
+        },
+        "decision": {
+          "enum": [
+            "confirm",
+            "partial",
+            "revise",
+            "reject"
+          ]
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confirmation_text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "decision_timepoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "date",
+        "precision",
+        "status",
+        "source_ids",
+        "related_graduation_year",
+        "eligibility_status",
+        "rule_source_ids"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "preparation",
+            "application",
+            "exam",
+            "program_entry",
+            "internship",
+            "employment",
+            "other"
+          ]
+        },
+        "date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "precision": {
+          "enum": [
+            "year",
+            "month",
+            "day"
+          ]
+        },
+        "status": {
+          "enum": [
+            "unconfirmed",
+            "confirmed",
+            "conflicted",
+            "declined"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^SRC-[0-9]{6}$"
+          },
+          "uniqueItems": true
+        },
+        "related_graduation_year": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1900,
+          "maximum": 2200
+        },
+        "eligibility_status": {
+          "enum": [
+            "unknown",
+            "not_applicable",
+            "verified"
+          ]
+        },
+        "rule_source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^SRC-[0-9]{6}$"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

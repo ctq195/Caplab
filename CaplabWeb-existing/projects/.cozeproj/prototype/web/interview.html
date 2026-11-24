@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.cn" />
+  <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin />
+  <link href="https://fonts.googleapis.cn/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色：墨松绿（实验室玻璃器皿般的沉静生长感） === */
+      --color-primary:              #0E6A5F;
+      --color-primary-container:    #D9ECE7;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白 × 纯白卡片） === */
+      --color-background:                 #F6F5F2;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #EFEEE9;
+      --color-surface-container-high:     #E7E6E0;
+      --color-surface-container-highest:  #E0DFD9;
+      /* === 文字 === */
+      --color-on-surface:           #1C2321;
+      --color-on-surface-variant:   #59635E;
+      /* === 功能色 === */
+      --color-success:  #1E8E5A;
+      --color-error:    #C83E33;
+      --color-warning:  #B57A0A;
+      /* === 边框（Ghost Border 基底） === */
+      --color-outline:          #C6C4BC;
+      --color-outline-variant:  #D9D7D0;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和） === */
+      --shadow-card:   0 1px 3px rgba(28,35,33,0.07), 0 1px 2px rgba(28,35,33,0.05);
+      --shadow-float:  0 8px 24px rgba(28,35,33,0.10), 0 2px 6px rgba(28,35,33,0.05);
+      --shadow-dialog: 0 20px 48px rgba(28,35,33,0.16), 0 4px 12px rgba(28,35,33,0.06);
+      /* === 字体 === */
+      --font-sans: "Noto Sans SC", system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+    body { min-height: 100vh; }
+    .scrollbar-none { scrollbar-width: none; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans antialiased">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段（从 @nav:start 到 @nav:end） -->
+  <header class="sticky top-0 z-40 h-16 bg-surface/95 backdrop-blur border-b border-outline-variant/30">
+    <div class="max-w-6xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
+      <a href="home.html" class="flex items-center gap-2.5 shrink-0">
+        <span class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+          <i data-lucide="flask-conical" class="w-4.5 h-4.5 text-on-primary"></i>
+        </span>
+        <span class="font-bold text-[17px] tracking-tight">CapLab</span>
+      </a>
+      <nav class="flex items-center gap-0.5 overflow-x-auto scrollbar-none" aria-label="主导航">
+        <a href="home.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">开场</a>
+        <a href="chat.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">对话工作台</a>
+        <a href="path-convergence.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">路径收敛</a>
+        <a href="evidence-cycle.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">证据回合</a>
+        <a href="resume.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">简历工坊</a>
+        <a href="interview.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium bg-primary/10 text-primary rounded-md whitespace-nowrap" aria-current="page">模拟面试</a>
+        <a href="review-report.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">复盘报告</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段（从 @nav:start 到 @nav:end） -->
+
+  <!-- @main-content:start -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
+
+    <!-- 页面标题 -->
+    <div class="space-y-1">
+      <h1 class="text-2xl font-bold tracking-tight">模拟面试间</h1>
+      <p class="text-sm text-on-surface-variant">基于 JD 与简历的多轮连环追问，深挖项目贡献边界，区分「教程跟做」与「独立完成」。</p>
+    </div>
+
+    <!-- A. 面试配置条 -->
+    <section id="interview-config-bar" class="bg-surface shadow-card rounded-lg p-4 flex flex-wrap gap-3 items-center">
+      <span class="inline-flex items-center gap-1.5 bg-primary-container text-primary rounded-full px-3 py-1 text-xs font-medium">
+        <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+        附加能力 · 模拟面试 · IN_PROGRESS
+      </span>
+      <!-- 信息芯片-岗位 -->
+      <span class="inline-flex items-center gap-1.5 bg-surface-container text-on-surface-variant rounded-full px-3 py-1 text-xs">
+        <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+        岗位：AI 产品经理实习生
+      </span>
+      <!-- 信息芯片-题量 -->
+      <span class="inline-flex items-center gap-1.5 bg-surface-container text-on-surface-variant rounded-full px-3 py-1 text-xs">
+        <i data-lucide="list-ordered" class="w-3.5 h-3.5"></i>
+        题量：6 题（当前第 3 题）
+      </span>
+      <!-- 信息芯片-模式 -->
+      <span class="inline-flex items-center gap-1.5 bg-surface-container text-on-surface-variant rounded-full px-3 py-1 text-xs">
+        <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+        模式：标准（每题至多 1 次追问）
+      </span>
+      <!-- 信息芯片-语言 -->
+      <span class="inline-flex items-center gap-1.5 bg-surface-container text-on-surface-variant rounded-full px-3 py-1 text-xs">
+        <i data-lucide="languages" class="w-3.5 h-3.5"></i>
+        语言：中文
+      </span>
+      <div class="flex items-center gap-2 ml-auto">
+        <button id="btn-end-interview" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-error bg-error/10 hover:bg-error/15 active:scale-[0.98] transition-all">
+          <i data-lucide="square-stop" class="w-4 h-4"></i>
+          结束面试
+        </button>
+        <button id="btn-pause-interview" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container active:scale-[0.98] transition-all">
+          <i data-lucide="pause" class="w-4 h-4"></i>
+          暂停
+        </button>
+      </div>
+      <p class="w-full text-xs text-on-surface-variant">暂停不累述、不视为完成；提前结束则未答题无法评估。</p>
+    </section>
+
+    <!-- B. 面试对话区 -->
+    <section id="interview-chat-card" class="bg-surface shadow-card rounded-xl p-5 space-y-5">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-base font-semibold inline-flex items-center gap-2">
+          <i data-lucide="messages-square" class="w-4 h-4 text-primary"></i>
+          面试进行中 · 连环追问
+        </h2>
+        <span class="text-xs text-on-surface-variant">一次只问一题 · 不提前提供参考答案</span>
+      </div>
+
+      <div class="space-y-4">
+
+        <!-- 回合 Q1：面试官主问题 -->
+        <div class="flex items-start gap-3">
+          <span class="w-9 h-9 shrink-0 rounded-full bg-primary-container flex items-center justify-center">
+            <i data-lucide="bot" class="w-4.5 h-4.5 text-primary"></i>
+          </span>
+          <div class="max-w-[85%] space-y-1">
+            <span class="text-xs text-on-surface-variant">面试官 · Q1 主问题</span>
+            <div class="bg-surface-container rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm leading-relaxed">
+              请用 1 分钟做个自我介绍，并说明为什么想投 AI 产品实习。
+            </div>
+          </div>
+        </div>
+
+        <!-- 回合 Q1：用户回答 -->
+        <div class="flex items-start gap-3 flex-row-reverse">
+          <span class="w-9 h-9 shrink-0 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-medium">林</span>
+          <div class="max-w-[85%] space-y-1 items-end flex flex-col">
+            <span class="text-xs text-on-surface-variant">林同学</span>
+            <div class="bg-surface-container-high rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm leading-relaxed">
+              我是计科大三的林同学，做过校园小程序的需求整理，也访谈过产品经理校友，所以想试试产品方向。
+            </div>
+          </div>
+        </div>
+
+        <!-- 回合 Q1：追问（由回答缺口触发） -->
+        <div class="flex items-start gap-3">
+          <span class="w-9 h-9 shrink-0 rounded-full bg-warning/15 flex items-center justify-center">
+            <i data-lucide="bot" class="w-4.5 h-4.5 text-warning"></i>
+          </span>
+          <div class="max-w-[85%] space-y-1">
+            <span class="inline-flex items-center gap-1 rounded-full bg-warning/15 text-warning px-2 py-0.5 text-[11px] font-medium w-fit">
+              <i data-lucide="corner-down-right" class="w-3 h-3"></i>
+              追问 · 由回答缺口触发
+            </span>
+            <div class="bg-warning/5 border border-warning/15 rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm leading-relaxed">
+              你提到「想试试产品方向」——在这次投递之前，有没有哪件具体的事让你判断自己不只是好奇？
+            </div>
+          </div>
+        </div>
+
+        <!-- 分隔线 -->
+        <div class="border-t border-outline-variant/30"></div>
+
+        <!-- 回合 Q2：面试官主问题（深挖贡献边界） -->
+        <div class="flex items-start gap-3">
+          <span class="w-9 h-9 shrink-0 rounded-full bg-primary-container flex items-center justify-center">
+            <i data-lucide="bot" class="w-4.5 h-4.5 text-primary"></i>
+          </span>
+          <div class="max-w-[85%] space-y-1">
+            <span class="text-xs text-on-surface-variant">面试官 · Q2 主问题 · 贡献边界</span>
+            <div class="bg-surface-container rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm leading-relaxed">
+              详细讲讲小程序项目里你具体做了什么、哪些是你独立完成的。
+            </div>
+          </div>
+        </div>
+
+        <!-- 回合 Q2：用户回答 -->
+        <div class="flex items-start gap-3 flex-row-reverse">
+          <span class="w-9 h-9 shrink-0 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-medium">林</span>
+          <div class="max-w-[85%] space-y-1 items-end flex flex-col">
+            <span class="text-xs text-on-surface-variant">林同学</span>
+            <div class="bg-surface-container-high rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm leading-relaxed">
+              我访谈了 12 个同学，整理了需求，画了几个页面；后端接口和小程序上线是两个学长做的。
+            </div>
+          </div>
+        </div>
+
+        <!-- 回合 Q2：关键追问 -->
+        <div class="flex items-start gap-3">
+          <span class="w-9 h-9 shrink-0 rounded-full bg-warning/15 flex items-center justify-center">
+            <i data-lucide="bot" class="w-4.5 h-4.5 text-warning"></i>
+          </span>
+          <div class="max-w-[85%] space-y-1">
+            <span class="inline-flex items-center gap-1 rounded-full bg-warning/15 text-warning px-2 py-0.5 text-[11px] font-medium w-fit">
+              <i data-lucide="corner-down-right" class="w-3 h-3"></i>
+              追问 · 关键缺口：独立产物
+            </span>
+            <div class="bg-warning/5 border border-warning/15 rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm leading-relaxed">
+              如果把学长的部分拿掉，只看你自己产出的东西，哪一份产物能直接拿给别人看？它解决了谁的什么问题？
+            </div>
+          </div>
+        </div>
+
+        <!-- 分隔线 -->
+        <div class="border-t border-outline-variant/30"></div>
+
+        <!-- 回合 Q3：当前题（高亮） -->
+        <div id="current-question" class="flex items-start gap-3 rounded-xl bg-primary/5 border border-primary/20 p-3 -m-1">
+          <span class="w-9 h-9 shrink-0 rounded-full bg-primary flex items-center justify-center">
+            <i data-lucide="bot" class="w-4.5 h-4.5 text-on-primary"></i>
+          </span>
+          <div class="max-w-[85%] space-y-1">
+            <span class="inline-flex items-center gap-1 rounded-full bg-primary-container text-primary px-2 py-0.5 text-[11px] font-medium w-fit">
+              <i data-lucide="sparkles" class="w-3 h-3"></i>
+              当前题 · Q3 · 教程跟做 vs 独立完成
+            </span>
+            <div class="bg-surface rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm leading-relaxed border border-primary/15">
+              Titanic 那个项目，请你区分一下：哪些步骤是你自己设计的，哪些是跟着教程做的？
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Q3 答题输入区（等待作答） -->
+      <div id="answer-input-area" class="space-y-2 border-t border-outline-variant/30 pt-4">
+        <div class="relative">
+          <textarea id="answer-textarea" rows="3" class="w-full bg-surface-container border-none rounded-lg p-3 pr-12 text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors resize-none" placeholder="用语音或文字回答这一题…"></textarea>
+          <button id="btn-voice-input" title="语音输入" class="absolute right-3 bottom-3 w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+            <i data-lucide="mic" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="btn-submit-answer" class="inline-flex items-center gap-1.5 bg-primary text-on-primary px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all">
+            <i data-lucide="send-horizontal" class="w-4 h-4"></i>
+            提交回答
+          </button>
+          <span class="text-xs text-on-surface-variant">一次一题，答完才会有下一题与追问。</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分区标题条：进行中 → 已评估 -->
+    <div class="flex items-center gap-3 pt-2">
+      <span class="h-px flex-1 bg-outline-variant/50"></span>
+      <span class="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant">
+        <i data-lucide="chevrons-down-up" class="w-3.5 h-3.5"></i>
+        以下为面试结束（EVALUATED）后的反馈
+      </span>
+      <span class="h-px flex-1 bg-outline-variant/50"></span>
+    </div>
+
+    <!-- C. 结束后的四维反馈报告 -->
+    <section id="feedback-report-card" class="bg-surface shadow-card rounded-xl p-6 space-y-7">
+
+      <!-- 报告标题条 -->
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-primary-container/60 px-4 py-3">
+        <h2 class="text-base font-semibold inline-flex items-center gap-2">
+          <i data-lucide="clipboard-check" class="w-4 h-4 text-primary"></i>
+          面试评估报告 · EVALUATED
+        </h2>
+        <span class="text-xs text-on-surface-variant">评分仅反馈本次表现，不是录用概率，也不是招聘方评分。</span>
+      </div>
+
+      <!-- 四维评分 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <!-- 维度1-自我介绍 -->
+        <div class="rounded-lg bg-surface-container/60 p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold">自我介绍</span>
+            <span class="text-lg font-bold text-primary">72</span>
+          </div>
+          <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+            <div class="h-full rounded-full bg-primary" style="width:72%"></div>
+          </div>
+          <p class="text-xs text-success font-medium">优点：专业与意向清楚。</p>
+          <p class="text-xs text-on-surface-variant leading-relaxed">建议：开场缺少一个具体事实支撑动机，可用「访谈校友后我做了什么」。</p>
+        </div>
+
+        <!-- 维度2-项目 -->
+        <div class="rounded-lg bg-surface-container/60 p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold">项目</span>
+            <span class="text-lg font-bold text-primary">65</span>
+          </div>
+          <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+            <div class="h-full rounded-full bg-primary" style="width:65%"></div>
+          </div>
+          <p class="text-xs text-success font-medium">边界诚实，能主动说明后端由学长完成（加分）。</p>
+          <p class="text-xs text-on-surface-variant leading-relaxed">独立产物不清晰，需准备一个可独立展示的需求/原型作品。</p>
+        </div>
+
+        <!-- 维度3-技术 -->
+        <div class="rounded-lg bg-surface-container/60 p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold">技术</span>
+            <span class="text-lg font-bold text-primary">58</span>
+          </div>
+          <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+            <div class="h-full rounded-full bg-primary" style="width:58%"></div>
+          </div>
+          <p class="text-xs text-on-surface-variant leading-relaxed">本次回答未体现对需求优先级方法（如 RICE / 用户价值排序）的使用——这只代表本次没说到，<span class="font-medium text-warning">不等于你不会</span>。</p>
+        </div>
+
+        <!-- 维度4-表达 -->
+        <div class="rounded-lg bg-surface-container/60 p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold">表达</span>
+            <span class="text-lg font-bold text-primary">78</span>
+          </div>
+          <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+            <div class="h-full rounded-full bg-primary" style="width:78%"></div>
+          </div>
+          <p class="text-xs text-success font-medium">条理清楚、用词克制。</p>
+          <p class="text-xs text-on-surface-variant leading-relaxed">可练习先说结论再展开。</p>
+        </div>
+      </div>
+
+      <!-- 逐题证据化反馈 -->
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold inline-flex items-center gap-2">
+          <i data-lucide="file-search" class="w-4 h-4 text-primary"></i>
+          逐题证据化反馈
+        </h3>
+        <div class="divide-y divide-outline-variant/40 rounded-lg border border-outline-variant/20">
+          <!-- 证据-Q1 -->
+          <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3">
+            <span class="shrink-0 text-xs font-semibold text-primary w-16">Q1 证据</span>
+            <p class="text-sm text-on-surface-variant leading-relaxed">回答明确了专业（计科大三）与意向（产品方向）；但动机仅以「想试试」带过，未给出访谈校友之后的具体动作，故追问成立。</p>
+          </div>
+          <!-- 证据-Q2 -->
+          <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3">
+            <span class="shrink-0 text-xs font-semibold text-primary w-16">Q2 证据</span>
+            <p class="text-sm text-on-surface-variant leading-relaxed">主动交代「访谈 12 人、整理需求、画页面」为自身产出，并诚实说明后端接口与上线由学长完成；但需求清单/原型的具体形态与解决的问题未说清，独立产物证据不足。</p>
+          </div>
+          <!-- 证据-Q3 -->
+          <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3">
+            <span class="shrink-0 text-xs font-semibold text-error w-16">Q3</span>
+            <p class="text-sm text-on-surface-variant leading-relaxed">未作答，无法评估。该题本用于区分 Titanic 项目的「教程跟做 / 独立完成」边界。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 回答框架 + 下一轮练习重点 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        <!-- 回答框架小卡 -->
+        <div class="rounded-lg border border-outline-variant/20 bg-surface-container/50 p-4 space-y-3">
+          <h3 class="text-sm font-semibold inline-flex items-center gap-2">
+            <i data-lucide="lightbulb" class="w-4 h-4 text-warning"></i>
+            可复用回答框架
+          </h3>
+          <p class="text-xs text-on-surface-variant">以下是可复用的表达结构，不是标准答案。</p>
+          <div class="rounded-md bg-surface px-3 py-2.5 text-sm leading-relaxed">
+            <span class="font-medium text-primary">项目题框架：</span>背景一句 → 我的独立动作 → 用的方法 → 可核验结果 → 协作边界。
+          </div>
+        </div>
+
+        <!-- 下一轮练习重点（最多 3 条） -->
+        <div class="rounded-lg border border-outline-variant/20 bg-surface-container/50 p-4 space-y-3">
+          <h3 class="text-sm font-semibold inline-flex items-center gap-2">
+            <i data-lucide="target" class="w-4 h-4 text-primary"></i>
+            下一轮练习重点
+          </h3>
+          <ul class="space-y-2.5">
+            <!-- 练习重点1 -->
+            <li class="flex items-start gap-2 text-sm text-on-surface-variant">
+              <i data-lucide="target" class="w-4 h-4 mt-0.5 text-primary shrink-0"></i>
+              <span>准备一个能独立展示的需求拆解 / 原型，专练贡献边界题。</span>
+            </li>
+            <!-- 练习重点2 -->
+            <li class="flex items-start gap-2 text-sm text-on-surface-variant">
+              <i data-lucide="target" class="w-4 h-4 mt-0.5 text-primary shrink-0"></i>
+              <span>自我介绍加入一个具体事件与你的动作。</span>
+            </li>
+            <!-- 练习重点3 -->
+            <li class="flex items-start gap-2 text-sm text-on-surface-variant">
+              <i data-lucide="target" class="w-4 h-4 mt-0.5 text-primary shrink-0"></i>
+              <span>练习区分「教程跟做 / 独立完成」的诚实表述。</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 底部操作 -->
+      <div class="flex flex-wrap items-center gap-2 border-t border-outline-variant/30 pt-5">
+        <a id="btn-export-report" href="review-report.html" class="inline-flex items-center gap-1.5 bg-primary text-on-primary px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          生成报告 / 导出（PDF）
+        </a>
+        <button id="btn-practice-again" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-outline-variant/20 transition-all">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          再练一轮
+        </button>
+        <a id="btn-goto-resume" href="resume.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-outline-variant/20 transition-all">
+          <i data-lucide="pencil-line" class="w-4 h-4"></i>
+          去做简历修改
+        </a>
+        <a id="btn-back-chat" href="chat.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-outline-variant/20 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          返回工作台
+        </a>
+      </div>
+
+      <!-- 元信息 -->
+      <p class="text-xs text-on-surface-variant">知识库版本：免费版 v2.3.0 · 反馈基于本次可见回答。</p>
+    </section>
+
+  </main>
+  <!-- @main-content:end -->
+
+  <script>
+    $(function () {
+
+      // 提交回答 - 完整产品行为（原型仅入口 + 注释）：
+      // 1. 校验 textarea 非空，空内容时在输入区下方提示「请先作答再提交」
+      // 2. 将当前回答作为用户气泡插入到 #current-question 之后（真实产品由对话引擎追加，原型不动态渲染）
+      // 3. 调用面试引擎分析回答中的关键缺口（贡献/证据/因果/权衡/验证），决定是否生成 1 次追问
+      // 4. 标准模式下本题追问已达 1 次则进入第 4 题；一次只问一题，不提前给参考答案
+      // 5. 清空 textarea，更新配置条「当前第 N 题」
+      $('#btn-submit-answer').on('click', function () {
+        const text = $('#answer-textarea').val();
+        if (!text.trim()) {
+          console.log('请先作答再提交');
+          return;
+        }
+        console.log('提交 Q3 回答，等待面试引擎判定是否触发追问');
+      });
+
+      // 语音输入 - 应调用浏览器/第三方语音识别接口，将识别文本实时追加到 #answer-textarea
+      $('#btn-voice-input').on('click', function () {
+        console.log('需要调用语音识别接口实现语音作答');
+      });
+
+      // 暂停 - 完整行为：
+      // 1. 将会话状态置为 PAUSED（CREATED/IN_PROGRESS 可暂停），不要求用户继续确认
+      // 2. 保留当前进度（第 3 题、已追问次数），暂停不累述、不视为完成
+      // 3. 用户回来后从第 3 题原样继续
+      $('#btn-pause-interview').on('click', function () {
+        console.log('面试已暂停并延期，进度保留，不视为完成');
+      });
+
+      // 结束面试 - 完整行为：
+      // 1. 弹确认说明：提前结束后 Q4–Q6 未答部分无法评估
+      // 2. 状态流转 IN_PROGRESS → COMPLETED → EVALUATED
+      // 3. 仅基于已作答内容生成逐题证据化反馈与四维评分；未答题标注「未作答，无法评估」
+      // 4. 「本次回答未体现」不得改写为「用户不会」
+      $('#btn-end-interview').on('click', function () {
+        console.log('提前结束：未答题无法评估，进入 EVALUATED 反馈');
+      });
+
+      // 再练一轮 - 应基于相同 JD/简历重置会话（CREATED），可调整模式与题量
+      $('#btn-practice-again').on('click', function () {
+        console.log('开启新一轮模拟面试');
+      });
+
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

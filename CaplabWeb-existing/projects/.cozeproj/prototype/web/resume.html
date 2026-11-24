@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.cn" />
+  <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin />
+  <link href="https://fonts.googleapis.cn/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色：墨松绿（实验室玻璃器皿般的沉静生长感） === */
+      --color-primary:              #0E6A5F;
+      --color-primary-container:    #D9ECE7;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白 × 纯白卡片） === */
+      --color-background:                 #F6F5F2;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #EFEEE9;
+      --color-surface-container-high:     #E7E6E0;
+      --color-surface-container-highest:  #E0DFD9;
+      /* === 文字 === */
+      --color-on-surface:           #1C2321;
+      --color-on-surface-variant:   #59635E;
+      /* === 功能色 === */
+      --color-success:  #1E8E5A;
+      --color-error:    #C83E33;
+      --color-warning:  #B57A0A;
+      /* === 边框（Ghost Border 基底） === */
+      --color-outline:          #C6C4BC;
+      --color-outline-variant:  #D9D7D0;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和） === */
+      --shadow-card:   0 1px 3px rgba(28,35,33,0.07), 0 1px 2px rgba(28,35,33,0.05);
+      --shadow-float:  0 8px 24px rgba(28,35,33,0.10), 0 2px 6px rgba(28,35,33,0.05);
+      --shadow-dialog: 0 20px 48px rgba(28,35,33,0.16), 0 4px 12px rgba(28,35,33,0.06);
+      /* === 字体 === */
+      --font-sans: "Noto Sans SC", system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+    body { min-height: 100vh; }
+    .scrollbar-none { scrollbar-width: none; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans antialiased">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段（从 @nav:start 到 @nav:end） -->
+  <header class="sticky top-0 z-40 h-16 bg-surface/95 backdrop-blur border-b border-outline-variant/30">
+    <div class="max-w-6xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
+      <a href="home.html" class="flex items-center gap-2.5 shrink-0">
+        <span class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+          <i data-lucide="flask-conical" class="w-4.5 h-4.5 text-on-primary"></i>
+        </span>
+        <span class="font-bold text-[17px] tracking-tight">CapLab</span>
+      </a>
+      <nav class="flex items-center gap-0.5 overflow-x-auto scrollbar-none" aria-label="主导航">
+        <a href="home.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">开场</a>
+        <a href="chat.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">对话工作台</a>
+        <a href="path-convergence.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">路径收敛</a>
+        <a href="evidence-cycle.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">证据回合</a>
+        <a href="resume.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium bg-primary/10 text-primary rounded-md whitespace-nowrap" aria-current="page">简历工坊</a>
+        <a href="interview.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">模拟面试</a>
+        <a href="review-report.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">复盘报告</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段（从 @nav:start 到 @nav:end） -->
+
+  <!-- @main-content:start -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- 左右分栏：左侧编辑/材料区，右侧 A4 实时预览 -->
+    <div class="flex flex-col lg:flex-row gap-6">
+
+      <!-- ============ 左侧：编辑 / 材料区 ============ -->
+      <div class="flex-1 min-w-0 space-y-5 order-2 lg:order-1">
+
+        <!-- 页头 -->
+        <section>
+          <span class="inline-flex items-center gap-1.5 bg-primary-container text-primary rounded-full px-3 py-1 text-xs font-medium">
+            <i data-lucide="file-user" class="w-3.5 h-3.5"></i>
+            附加能力 · 简历工坊
+          </span>
+          <h1 class="text-2xl font-bold mt-2.5 tracking-tight">逐字段可溯源的岗位简历</h1>
+          <p class="text-sm text-on-surface-variant mt-1">没有 JD 时生成通用岗位方向版；所有数字与成果必须来自你的材料或你本人确认。</p>
+        </section>
+
+        <!-- 反造假纪律提示条 -->
+        <section id="anti-fraud-bar" class="bg-error/5 border border-error/20 rounded-lg p-3">
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="shield-x" class="w-4 h-4 text-error shrink-0 mt-0.5"></i>
+            <p class="text-[13px] leading-relaxed text-on-surface flex-1">
+              我不会写入无来源的数字或高强度措辞——例如“500+用户”“10万条数据”“效率提升X%”“独立设计开发”。如果你需要虚构内容，我会明确拒绝，并帮你把真实经历写得更清楚。
+            </p>
+            <button id="btn-toggle-banned" class="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-error hover:underline">
+              <i data-lucide="ban" class="w-3.5 h-3.5"></i>
+              查看禁用表达示例
+              <i data-lucide="chevron-down" class="w-3 h-3"></i>
+            </button>
+          </div>
+          <!-- 禁用表达示例（极简 toggle） -->
+          <div id="banned-examples" class="hidden mt-3 pl-6 border-t border-error/15 pt-3">
+            <p class="text-xs font-semibold text-on-surface-variant mb-2">以下表达均无材料来源，已被本版简历拒绝：</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs bg-error/10 text-error line-through">500+用户</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs bg-error/10 text-error line-through">10万条数据</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs bg-error/10 text-error line-through">效率提升40%</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs bg-error/10 text-error line-through">独立设计开发</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs bg-error/10 text-error line-through">精通 / 熟练掌握</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs bg-error/10 text-error line-through">主导 / 全权负责</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-2">如需表达能力强度，请改为“基础 / 参与 / 协助”，或提供可核验材料后由你本人确认升级。</p>
+          </div>
+        </section>
+
+        <!-- JD 输入卡 -->
+        <section class="bg-surface shadow-card rounded-lg p-4">
+          <label for="jd-textarea" class="block text-sm font-semibold mb-1.5">目标岗位 JD（粘贴岗位职责与要求）</label>
+          <textarea id="jd-textarea" class="w-full bg-surface-container border-none rounded-lg p-3 text-sm text-on-surface min-h-[110px] resize-y focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" placeholder="粘贴岗位职责与任职要求；留空则生成通用岗位方向版">AI 产品经理实习生｜协助产品经理进行用户需求收集与梳理；参与产品功能原型设计；跟踪上线数据并整理分析报告；要求：沟通清晰、对 AI 产品有热情、有产品/项目经历优先。</textarea>
+          <div class="flex flex-wrap items-center gap-2 mt-3">
+            <!-- 芯片-识别结果 -->
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-primary/10 text-primary">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+              已识别：职责 4 项 / 必备 2 项 / 加分 1 项
+            </span>
+            <button id="btn-parse-jd" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-on-surface border border-outline-variant/30 hover:bg-surface-container transition-colors">
+              <i data-lucide="scan-search" class="w-3.5 h-3.5"></i>
+              拆解 JD
+            </button>
+            <span class="text-xs text-on-surface-variant inline-flex items-center gap-1 ml-auto">
+              <i data-lucide="info" class="w-3.5 h-3.5"></i>
+              没有 JD？当前为：AI 产品实习方向版
+            </span>
+          </div>
+        </section>
+
+        <!-- 证据矩阵卡 -->
+        <section class="bg-surface shadow-card rounded-lg p-4">
+          <h2 class="text-base font-semibold flex items-center gap-2">
+            <i data-lucide="table-2" class="w-4 h-4 text-primary"></i>
+            经历证据矩阵（决定每条经历怎么写）
+          </h2>
+          <div class="mt-3 border border-outline-variant/20 rounded-lg overflow-hidden">
+            <!-- 表头 -->
+            <div class="grid grid-cols-12 px-3 py-2.5 bg-surface-container text-xs font-semibold text-on-surface-variant">
+              <span class="col-span-5">经历</span>
+              <span class="col-span-3">证据等级</span>
+              <span class="col-span-4">可写法</span>
+            </div>
+            <div class="divide-y divide-outline-variant/20">
+              <!-- 矩阵行1：二手书小程序-需求整理 -->
+              <div class="grid grid-cols-12 px-3 py-2.5 items-center">
+                <span class="col-span-5 text-sm text-on-surface">二手书小程序-需求整理</span>
+                <span class="col-span-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">direct</span>
+                </span>
+                <span class="col-span-4 text-xs text-on-surface-variant leading-relaxed">“动作+方法+对象+结果”可直接写，须注明团队协作</span>
+              </div>
+              <!-- 矩阵行2：校友访谈纪要 -->
+              <div class="grid grid-cols-12 px-3 py-2.5 items-center">
+                <span class="col-span-5 text-sm text-on-surface">校友访谈纪要</span>
+                <span class="col-span-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">direct</span>
+                </span>
+                <span class="col-span-4 text-xs text-on-surface-variant leading-relaxed">可写访谈与纪要产出</span>
+              </div>
+              <!-- 矩阵行3：Figma/Axure 原型 -->
+              <div class="grid grid-cols-12 px-3 py-2.5 items-center">
+                <span class="col-span-5 text-sm text-on-surface">Figma/Axure 原型</span>
+                <span class="col-span-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/15 text-primary">supportable</span>
+                </span>
+                <span class="col-span-4 text-xs text-on-surface-variant leading-relaxed">写“参与部分页面原型”，不写“独立设计”</span>
+              </div>
+              <!-- 矩阵行4：SQL/Python -->
+              <div class="grid grid-cols-12 px-3 py-2.5 items-center">
+                <span class="col-span-5 text-sm text-on-surface">SQL/Python</span>
+                <span class="col-span-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">transferable</span>
+                </span>
+                <span class="col-span-4 text-xs text-on-surface-variant leading-relaxed">课程水平，写“基础”，不写“熟练/精通”</span>
+              </div>
+              <!-- 矩阵行5：Titanic -->
+              <div class="grid grid-cols-12 px-3 py-2.5 items-center">
+                <span class="col-span-5 text-sm text-on-surface">Kaggle Titanic</span>
+                <span class="col-span-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">not_relevant / gap</span>
+                </span>
+                <span class="col-span-4 text-xs text-on-surface-variant leading-relaxed">教程跟做，不作为独立项目；可在备注不列</span>
+              </div>
+              <!-- 矩阵行6：量化成果 -->
+              <div class="grid grid-cols-12 px-3 py-2.5 items-center">
+                <span class="col-span-5 text-sm text-on-surface">量化成果（用户数/提升%）</span>
+                <span class="col-span-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">gap</span>
+                </span>
+                <span class="col-span-4 text-xs text-on-surface-variant leading-relaxed">待你确认：有可核验数字再写，否则用定性结果</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-2 flex items-start gap-1">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5 shrink-0 mt-px"></i>
+            direct＝直接经历；supportable＝可被材料支持；transferable＝可迁移未验证；gap＝缺口；not_relevant＝不相关。
+          </p>
+        </section>
+
+        <!-- 评分与修改建议卡 -->
+        <section class="bg-surface shadow-card rounded-lg p-4">
+          <h2 class="text-base font-semibold flex items-center gap-2">
+            <i data-lucide="gauge" class="w-4 h-4 text-primary"></i>
+            简历评分
+          </h2>
+          <p class="text-xs text-on-surface-variant mt-1">用于内部优化，非 ATS 官方评分、非录用概率。总分仅作改进优先级参考。</p>
+
+          <div class="flex items-end gap-3 mt-3 mb-4">
+            <span class="text-3xl font-bold text-primary leading-none">86</span>
+            <span class="text-sm text-on-surface-variant mb-0.5">/ 100（优化参考分，逐维度解读见下）</span>
+          </div>
+
+          <!-- 维度1：岗位覆盖 -->
+          <div class="mb-2.5">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-on-surface">岗位覆盖</span>
+              <span class="text-xs text-on-surface-variant">90</span>
+            </div>
+            <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width:90%"></div>
+            </div>
+          </div>
+          <!-- 维度2：证据强度 -->
+          <div class="mb-2.5">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-on-surface">证据强度</span>
+              <span class="text-xs text-on-surface-variant">88</span>
+            </div>
+            <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width:88%"></div>
+            </div>
+          </div>
+          <!-- 维度3：技术关键性 -->
+          <div class="mb-2.5">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-on-surface">技术关键性</span>
+              <span class="text-xs text-on-surface-variant">80</span>
+            </div>
+            <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width:80%"></div>
+            </div>
+          </div>
+          <!-- 维度4：量化成果（真实） -->
+          <div class="mb-2.5">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-on-surface flex items-center gap-1">
+                量化成果（真实）
+                <span class="inline-flex items-center px-1.5 py-px rounded-sm text-[10px] bg-warning/10 text-warning">未造假</span>
+              </span>
+              <span class="text-xs text-on-surface-variant">72</span>
+            </div>
+            <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-warning rounded-full" style="width:72%"></div>
+            </div>
+            <p class="text-[11px] text-on-surface-variant mt-1">无可核验数字，用定性结果，未因缺数字而鼓励造假。</p>
+          </div>
+          <!-- 维度5：个人贡献边界 -->
+          <div class="mb-2.5">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-on-surface">个人贡献边界</span>
+              <span class="text-xs text-on-surface-variant">92</span>
+            </div>
+            <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width:92%"></div>
+            </div>
+          </div>
+          <!-- 维度6：认可度 -->
+          <div class="mb-2.5">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-on-surface">认可度</span>
+              <span class="text-xs text-on-surface-variant">82</span>
+            </div>
+            <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width:82%"></div>
+            </div>
+          </div>
+          <!-- 维度7：时效性 -->
+          <div class="mb-2.5">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-on-surface">时效性</span>
+              <span class="text-xs text-on-surface-variant">90</span>
+            </div>
+            <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width:90%"></div>
+            </div>
+          </div>
+          <!-- 维度8：版面信息量 -->
+          <div class="mb-1">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-medium text-on-surface">版面信息量</span>
+              <span class="text-xs text-on-surface-variant">85</span>
+            </div>
+            <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width:85%"></div>
+            </div>
+          </div>
+
+          <!-- 修改建议 -->
+          <div class="mt-4 pt-3 border-t border-outline-variant/20">
+            <h3 class="text-sm font-semibold mb-2 flex items-center gap-1.5">
+              <i data-lucide="list-checks" class="w-4 h-4 text-primary"></i>
+              修改建议（真实可执行）
+            </h3>
+            <ul class="space-y-2">
+              <!-- 建议1 -->
+              <li class="flex items-start gap-2 text-[13px] text-on-surface leading-relaxed">
+                <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-on-surface-variant shrink-0 mt-1"></i>
+                把“参与开发”统一改为具体负责的需求与原型范围，避免被误读为独立开发。
+              </li>
+              <!-- 建议2 -->
+              <li class="flex items-start gap-2 text-[13px] text-on-surface leading-relaxed">
+                <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-on-surface-variant shrink-0 mt-1"></i>
+                补一个可核验结果：如访谈后哪几条需求进入了原型（你确认后可写）。
+              </li>
+              <!-- 建议3 -->
+              <li class="flex items-start gap-2 text-[13px] text-on-surface leading-relaxed">
+                <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-on-surface-variant shrink-0 mt-1"></i>
+                Titanic 教程跟做建议不列，或明确标注“课程练习”。
+              </li>
+              <!-- 建议4 -->
+              <li class="flex items-start gap-2 text-[13px] text-on-surface leading-relaxed">
+                <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-on-surface-variant shrink-0 mt-1"></i>
+                联系方式为占位，请替换为真实信息。
+              </li>
+            </ul>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ============ 右侧：A4 简历实时预览 ============ -->
+      <div class="w-full lg:w-[640px] shrink-0 order-1 lg:order-2">
+        <div class="lg:sticky lg:top-20">
+          <!-- 预览工具条 -->
+          <div class="flex items-center gap-1.5 mb-3 bg-surface shadow-card rounded-lg p-2">
+            <button id="btn-zoom-out" class="p-1.5 rounded-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="缩小">
+              <i data-lucide="zoom-out" class="w-4 h-4"></i>
+            </button>
+            <span id="zoom-label" class="text-xs text-on-surface-variant min-w-[44px] text-center">100%</span>
+            <button id="btn-zoom-in" class="p-1.5 rounded-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="放大">
+              <i data-lucide="zoom-in" class="w-4 h-4"></i>
+            </button>
+            <span class="w-px h-4 bg-outline-variant/40 mx-1"></span>
+            <button id="btn-download-pdf-top" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface border border-outline-variant/30 hover:bg-surface-container transition-colors">
+              <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+              下载 PDF
+            </button>
+            <button id="btn-download-source-top" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface border border-outline-variant/30 hover:bg-surface-container transition-colors">
+              <i data-lucide="file-code-2" class="w-3.5 h-3.5"></i>
+              可编辑源
+            </button>
+            <button id="btn-print-top" class="p-1.5 rounded-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors ml-auto" title="打印">
+              <i data-lucide="printer" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- A4 纸面（真实一页简历内容） -->
+          <div id="resume-paper-scaler" class="origin-top">
+            <div class="bg-white shadow-float rounded-md p-7 text-[#1C2321]" style="aspect-ratio: 210 / 297;">
+              <div class="h-full flex flex-col">
+
+                <!-- 姓名与求职意向 -->
+                <header class="border-b border-[#D9D7D0] pb-2.5">
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <h2 class="text-xl font-bold leading-tight">林同学</h2>
+                      <p class="text-[13px] text-[#59635E] mt-0.5">求职意向：AI 产品经理实习生（本地）</p>
+                    </div>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[11px] bg-warning/10 text-warning shrink-0">
+                      <i data-lucide="alert-triangle" class="w-3 h-3"></i>
+                      一页版 · A4
+                    </span>
+                  </div>
+                  <!-- 占位联系方式 -->
+                  <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                    <span class="text-[11px] text-[#59635E]">手机：138****0000（示例占位）｜邮箱：lin@example（示例占位）</span>
+                    <span class="inline-flex items-center gap-1 px-1.5 py-px rounded-sm text-[10px] bg-error/10 text-error">
+                      <i data-lucide="pencil-line" class="w-2.5 h-2.5"></i>
+                      占位信息，请替换
+                    </span>
+                  </div>
+                </header>
+
+                <!-- 教育背景 -->
+                <section class="mt-3">
+                  <h3 class="text-[13px] font-bold text-[#0E6A5F] flex items-center gap-1.5 mb-1.5">
+                    <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+                    教育背景
+                  </h3>
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-[12px] leading-relaxed">某 211 院校 · 计算机科学与技术 · 本科</p>
+                    <span class="text-[11px] text-[#59635E] shrink-0">2023.09–2027.06</span>
+                  </div>
+                  <span class="inline-flex items-center gap-1 mt-0.5 text-[10px] text-[#59635E] bg-surface-container px-1.5 py-px rounded-sm">
+                    <i data-lucide="paperclip" class="w-2.5 h-2.5"></i>
+                    来源：简历.pdf
+                  </span>
+                </section>
+
+                <!-- 项目经历 -->
+                <section class="mt-3 flex-1">
+                  <h3 class="text-[13px] font-bold text-[#0E6A5F] flex items-center gap-1.5 mb-1.5">
+                    <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                    项目经历
+                  </h3>
+
+                  <!-- 经历1：二手书小程序 -->
+                  <div class="mb-2.5">
+                    <div class="flex items-baseline justify-between gap-2">
+                      <p class="text-[12px] font-semibold">二手书小程序（4 人团队）｜需求与原型</p>
+                      <span class="text-[10px] text-[#59635E] shrink-0">校园项目</span>
+                    </div>
+                    <ul class="mt-1 space-y-1">
+                      <li class="flex items-start gap-1.5 text-[11.5px] leading-relaxed">
+                        <span class="w-1 h-1 rounded-full bg-[#0E6A5F] shrink-0 mt-[7px]"></span>
+                        <span class="flex-1">访谈 12 位同学整理需求清单，完成部分页面原型；与两位学长协作推进开发与发布（团队协作，后端非本人完成）。</span>
+                        <span class="inline-flex items-center gap-0.5 text-[9.5px] text-[#59635E] bg-surface-container px-1 py-px rounded-sm shrink-0 mt-px">
+                          <i data-lucide="paperclip" class="w-2.5 h-2.5"></i>简历.pdf
+                        </span>
+                      </li>
+                    </ul>
+                    <!-- 被拒绝的写法对照 -->
+                    <div class="mt-1.5 space-y-1">
+                      <div class="flex items-start gap-1.5 bg-error/5 border border-error/15 rounded px-2 py-1">
+                        <i data-lucide="x-circle" class="w-3 h-3 text-error shrink-0 mt-px"></i>
+                        <span class="text-[10.5px] text-on-surface-variant line-through flex-1">独立设计开发小程序，服务 500+ 用户，效率提升 40%</span>
+                        <span class="inline-flex items-center text-[9.5px] text-error shrink-0">无来源，已拒绝</span>
+                      </div>
+                      <div class="flex items-start gap-1.5 bg-success/5 border border-success/15 rounded px-2 py-1">
+                        <i data-lucide="check-circle-2" class="w-3 h-3 text-success shrink-0 mt-px"></i>
+                        <span class="text-[10.5px] text-on-surface flex-1">在团队中负责需求整理与部分原型（真实可核验）</span>
+                        <span class="inline-flex items-center gap-0.5 text-[9.5px] text-success shrink-0">
+                          <i data-lucide="user-check" class="w-2.5 h-2.5"></i>用户确认
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 经历2：院系职业分享 -->
+                  <div>
+                    <div class="flex items-baseline justify-between gap-2">
+                      <p class="text-[12px] font-semibold">院系职业分享｜志愿者</p>
+                      <span class="text-[10px] text-[#59635E] shrink-0">校园活动</span>
+                    </div>
+                    <ul class="mt-1 space-y-1">
+                      <li class="flex items-start gap-1.5 text-[11.5px] leading-relaxed">
+                        <span class="w-1 h-1 rounded-full bg-[#0E6A5F] shrink-0 mt-[7px]"></span>
+                        <span class="flex-1">现场访谈 2 位校友产品经理，整理访谈纪要并用于现场问答。</span>
+                        <span class="inline-flex items-center gap-0.5 text-[9.5px] text-[#59635E] bg-surface-container px-1 py-px rounded-sm shrink-0 mt-px">
+                          <i data-lucide="paperclip" class="w-2.5 h-2.5"></i>用户确认
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </section>
+
+                <!-- 技能 -->
+                <section class="mt-3">
+                  <h3 class="text-[13px] font-bold text-[#0E6A5F] flex items-center gap-1.5 mb-1.5">
+                    <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+                    技能
+                  </h3>
+                  <ul class="space-y-0.5">
+                    <li class="flex items-start gap-1.5 text-[11.5px] leading-relaxed">
+                      <span class="w-1 h-1 rounded-full bg-[#0E6A5F] shrink-0 mt-[7px]"></span>
+                      <span>SQL 基础、Python（课程水平）、Axure/Figma 入门</span>
+                    </li>
+                    <li class="flex items-start gap-1.5 text-[11.5px] leading-relaxed">
+                      <span class="w-1 h-1 rounded-full bg-[#0E6A5F] shrink-0 mt-[7px]"></i>
+                      <span class="flex-1">英语 CET-4</span>
+                      <span class="inline-flex items-center gap-0.5 text-[9.5px] text-warning bg-warning/10 px-1 py-px rounded-sm shrink-0">
+                        <i data-lucide="clock" class="w-2.5 h-2.5"></i>成绩单截图，待确认
+                      </span>
+                    </li>
+                  </ul>
+                  <p class="text-[10px] text-[#59635E] mt-1">说明：技能等级均按真实课程 / 入门水平标注，未使用“精通 / 熟练”。</p>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 底部操作条 -->
+    <section id="bottom-action-bar" class="mt-8 bg-surface shadow-float rounded-lg p-4">
+      <div class="flex flex-wrap items-center gap-2.5">
+        <button id="btn-download-pdf" class="inline-flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          下载 PDF
+        </button>
+        <button id="btn-download-source" class="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-on-surface border border-outline-variant/30 hover:bg-surface-container transition-colors">
+          <i data-lucide="file-code-2" class="w-4 h-4"></i>
+          下载可编辑源文件
+        </button>
+        <button id="btn-save-materials" class="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-on-surface border border-outline-variant/30 hover:bg-surface-container transition-colors">
+          <i data-lucide="folder-plus" class="w-4 h-4"></i>
+          保存到我的材料
+        </button>
+        <span id="save-status" class="hidden text-xs text-success inline-flex items-center gap-1">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>已保存到「我的材料」
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-1 mt-3">
+        <a id="link-to-interview" href="interview.html" class="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">
+          去模拟面试，用这份简历被追问
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
+        <a id="link-back-chat" href="chat.html" class="text-sm text-on-surface-variant hover:text-on-surface hover:underline inline-flex items-center gap-1">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          返回工作台
+        </a>
+      </div>
+      <p class="text-xs text-on-surface-variant mt-3 flex flex-wrap items-center gap-x-1.5">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-success"></i>
+        当前：一页版 · 内容均已绑定来源或标注待确认 · 知识库版本：免费版 v2.3.0
+      </p>
+    </section>
+
+  </main>
+  <!-- @main-content:end -->
+
+  <script>
+    $(function () {
+      // 禁用表达示例展开 / 收起（极简 toggle）
+      $('#btn-toggle-banned').on('click', function () {
+        const $box = $('#banned-examples');
+        const $icon = $(this).find('[data-lucide="chevron-down"]');
+        $box.toggleClass('hidden');
+        // 展开时翻转箭头（通过容器 class 控制旋转）
+        if ($box.hasClass('hidden')) {
+          $(this).find('i').last().removeClass('rotate-180');
+        } else {
+          $(this).find('i').last().addClass('rotate-180');
+        }
+      });
+
+      // 拆解 JD —— 静态演示按钮。
+      // 后续应实现的完整行为：
+      // 1. 读取 #jd-textarea 文本，调用后端 JD 解析接口；
+      // 2. 返回职责条目、必备要求、加分项三类结构；
+      // 3. 更新“已识别”芯片计数，并在下方逐条列出可勾选的要求；
+      // 4. 依据要求与证据矩阵重新匹配每条经历的覆盖状态。
+      $('#btn-parse-jd').on('click', function () {
+        console.log('拆解 JD：当前为静态演示，识别结果已预填（职责4/必备2/加分1）');
+      });
+
+      // 预览缩放：仅在桌面调整 A4 纸面缩放比例（90% / 100% / 110%）
+      let zoom = 100;
+      function applyZoom() {
+        $('#resume-paper-scaler').css('transform', 'scale(' + (zoom / 100) + ')');
+        $('#zoom-label').text(zoom + '%');
+      }
+      $('#btn-zoom-out').on('click', function () {
+        if (zoom > 80) { zoom -= 10; applyZoom(); }
+      });
+      $('#btn-zoom-in').on('click', function () {
+        if (zoom < 120) { zoom += 10; applyZoom(); }
+      });
+
+      // 下载 PDF —— 原型阶段不生成真实文件。
+      // 后续应实现：以 A4 单栏一页尺寸服务端渲染 / 浏览器打印为 PDF，
+      // 保留来源角标的显隐开关（投递版默认隐藏内部来源角标）。
+      $('#btn-download-pdf, #btn-download-pdf-top').on('click', function () {
+        console.log('下载 PDF：原型占位，正式版按一页 A4 导出（可选择是否保留来源角标）');
+      });
+
+      // 下载可编辑源文件（如 .docx / 结构化 JSON）
+      $('#btn-download-source, #btn-download-source-top').on('click', function () {
+        console.log('下载可编辑源文件：原型占位，正式版导出可编辑文档及来源绑定结构');
+      });
+
+      // 打印
+      $('#btn-print-top').on('click', function () {
+        console.log('打印：原型占位，正式版调用 window.print() 并套用 A4 打印样式');
+      });
+
+      // 保存到我的材料：简单切换成功状态
+      $('#btn-save-materials').on('click', function () {
+        $('#save-status').removeClass('hidden');
+        console.log('已保存当前简历版本到「我的材料」');
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

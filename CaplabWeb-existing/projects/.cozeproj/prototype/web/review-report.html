@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.cn" />
+  <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin />
+  <link href="https://fonts.googleapis.cn/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色：墨松绿（实验室玻璃器皿般的沉静生长感） === */
+      --color-primary:              #0E6A5F;
+      --color-primary-container:    #D9ECE7;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白 × 纯白卡片） === */
+      --color-background:                 #F6F5F2;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #EFEEE9;
+      --color-surface-container-high:     #E7E6E0;
+      --color-surface-container-highest:  #E0DFD9;
+      /* === 文字 === */
+      --color-on-surface:           #1C2321;
+      --color-on-surface-variant:   #59635E;
+      /* === 功能色 === */
+      --color-success:  #1E8E5A;
+      --color-error:    #C83E33;
+      --color-warning:  #B57A0A;
+      /* === 边框（Ghost Border 基底） === */
+      --color-outline:          #C6C4BC;
+      --color-outline-variant:  #D9D7D0;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和） === */
+      --shadow-card:   0 1px 3px rgba(28,35,33,0.07), 0 1px 2px rgba(28,35,33,0.05);
+      --shadow-float:  0 8px 24px rgba(28,35,33,0.10), 0 2px 6px rgba(28,35,33,0.05);
+      --shadow-dialog: 0 20px 48px rgba(28,35,33,0.16), 0 4px 12px rgba(28,35,33,0.06);
+      /* === 字体 === */
+      --font-sans: "Noto Sans SC", system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+    body { min-height: 100vh; }
+    .scrollbar-none { scrollbar-width: none; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans antialiased">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段（从 @nav:start 到 @nav:end） -->
+  <header class="sticky top-0 z-40 h-16 bg-surface/95 backdrop-blur border-b border-outline-variant/30">
+    <div class="max-w-6xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
+      <a href="home.html" class="flex items-center gap-2.5 shrink-0">
+        <span class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+          <i data-lucide="flask-conical" class="w-4.5 h-4.5 text-on-primary"></i>
+        </span>
+        <span class="font-bold text-[17px] tracking-tight">CapLab</span>
+      </a>
+      <nav class="flex items-center gap-0.5 overflow-x-auto scrollbar-none" aria-label="主导航">
+        <a href="home.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">开场</a>
+        <a href="chat.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">对话工作台</a>
+        <a href="path-convergence.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">路径收敛</a>
+        <a href="evidence-cycle.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">证据回合</a>
+        <a href="resume.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">简历工坊</a>
+        <a href="interview.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors whitespace-nowrap">模拟面试</a>
+        <a href="review-report.html" class="nav-link px-2.5 sm:px-3 py-1.5 text-[13px] font-medium bg-primary/10 text-primary rounded-md whitespace-nowrap" aria-current="page">复盘报告</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <!-- @main-content:start -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- 页头 -->
+    <div class="mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="inline-flex items-center gap-1.5 bg-primary-container text-primary rounded-full px-3 py-1 text-xs font-medium">
+          <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
+          阶段 5/5 · 证据复盘
+        </span>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight mb-2">证据复盘：什么新证据改变了哪层判断</h1>
+      <p class="text-sm text-on-surface-variant">复盘服务于下一次选择。没有执行不等于懒惰，我们先还原发生了什么。</p>
+    </div>
+
+    <!-- 桌面左右分栏：左侧复盘主体 flex-1，右侧 sticky 结论栏；移动堆叠 -->
+    <div class="flex flex-col lg:flex-row gap-6 items-start">
+
+      <!-- ============ 左侧：复盘主体 ============ -->
+      <div class="flex-1 min-w-0 space-y-6 w-full">
+
+        <!-- ===== 回合核对卡 ===== -->
+        <section class="space-y-4" aria-labelledby="rounds-heading">
+          <h2 id="rounds-heading" class="text-base font-semibold flex items-center gap-2">
+            <i data-lucide="list-checks" class="w-4 h-4 text-primary"></i>
+            回合核对：先还原事实，再更新判断
+          </h2>
+
+          <!-- 列表-回合卡1：回合1 completed -->
+          <article id="round-card-1" class="bg-surface shadow-card rounded-xl p-5">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h3 class="text-sm font-semibold">回合 1 · 需求拆解 + 低保真原型</h3>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>completed
+              </span>
+            </div>
+
+            <dl class="space-y-3 text-sm">
+              <div>
+                <dt class="text-xs text-on-surface-variant mb-1">原判断</dt>
+                <dd>我能否独立完成需求拆解并产出原型</dd>
+              </div>
+              <div>
+                <dt class="text-xs text-on-surface-variant mb-1">实际发生</dt>
+                <dd>完成宿舍报修需求拆解文档 + 4 屏纸绘原型；1 位同班同学看过并提出 2 个问题；周日连续投入约 3 小时。</dd>
+              </div>
+            </dl>
+
+            <!-- 证据条目 -->
+            <div class="mt-4 space-y-2">
+              <!-- 证据1-产物 -->
+              <div class="flex items-start gap-2 bg-surface-container rounded-md px-3 py-2 text-sm">
+                <i data-lucide="file-text" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                <div class="flex-1">
+                  <span>宿舍报修流程需求拆解文档 + 4 屏纸绘原型（含拍照存档）</span>
+                  <span class="ml-2 inline-block text-[10px] bg-primary/10 text-primary rounded px-1.5 py-0.5 align-middle">用户带回产物</span>
+                </div>
+              </div>
+              <!-- 证据2-他人反馈 -->
+              <div class="flex items-start gap-2 bg-surface-container rounded-md px-3 py-2 text-sm">
+                <i data-lucide="message-square-quote" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                <div class="flex-1">
+                  <span>同班 1 位同学阅读原型后提出 2 个问题</span>
+                  <span class="ml-2 inline-block text-[10px] bg-primary/10 text-primary rounded px-1.5 py-0.5 align-middle">用户带回产物</span>
+                </div>
+              </div>
+              <!-- 证据3-主观体验 -->
+              <div class="flex items-start gap-2 bg-surface-container rounded-md px-3 py-2 text-sm">
+                <i data-lucide="heart-handshake" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                <div class="flex-1">
+                  <span>主观体验：比预想更投入，周日下午一口气做了 3 小时，愿意再做一次</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 证据判定 -->
+            <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <span class="font-medium text-on-surface-variant">证据判定：</span>
+              <span class="inline-flex items-center gap-1 bg-success/15 text-success rounded px-2 py-0.5 font-medium">
+                <i data-lucide="trending-up" class="w-3 h-3"></i>supports · 强化主路径
+              </span>
+              <span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface rounded px-2 py-0.5 font-medium">
+                <i data-lucide="shield-half" class="w-3 h-3"></i>可信度 medium
+              </span>
+              <span class="text-on-surface-variant">理由：有真实产物 + 主动投入体验；但仅有同学反馈，缺少真实使用者验证。</span>
+            </div>
+
+            <!-- 替代解释（必须出现） -->
+            <div class="mt-3 flex items-start gap-2 rounded-md bg-warning/10 px-3 py-2.5 text-xs text-on-surface">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-warning shrink-0 mt-0.5"></i>
+              <p><span class="font-medium">替代解释：</span>高投入也可能因为周末没有其他压力，而非任务本身的兴趣。<span class="text-on-surface-variant">→ 建议下一轮接触真实报修使用者，以区分「任务兴趣」与「空闲带来的投入」。</span></p>
+            </div>
+          </article>
+
+          <!-- 列表-回合卡3：回合3 not_executed -->
+          <article id="round-card-3" class="bg-surface shadow-card rounded-xl p-5">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h3 class="text-sm font-semibold">回合 3 · 10 天每日复习 45 分钟节奏测试</h3>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">
+                <i data-lucide="pause-circle" class="w-3.5 h-3.5"></i>not_executed（完成 3/10 天）
+              </span>
+            </div>
+
+            <dl class="space-y-3 text-sm">
+              <div>
+                <dt class="text-xs text-on-surface-variant mb-1">原判断</dt>
+                <dd>能否连续 10 天每日复习 45 分钟</dd>
+              </div>
+              <div>
+                <dt class="text-xs text-on-surface-variant mb-1">先还原事实（不接受「我太懒」的解释）</dt>
+                <dd class="space-y-1.5">
+                  <span class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-on-surface-variant shrink-0 mt-0.5"></i>实际完成 3/10 天；</span>
+                  <span class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-on-surface-variant shrink-0 mt-0.5"></i>第 2 天起期中论文与实验截止连续撞期（安排冲突）；</span>
+                  <span class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-on-surface-variant shrink-0 mt-0.5"></i>原定早起时段与实际作息不符（任务设计 / 时间选择问题）；</span>
+                  <span class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-on-surface-variant shrink-0 mt-0.5"></i>第 6 天空闲但不想开始——仅出现一次，不能据此判定失去兴趣。</span>
+                </dd>
+              </div>
+            </dl>
+
+            <!-- 未执行原因（多选标签） -->
+            <div class="mt-4">
+              <div class="text-xs text-on-surface-variant mb-2">未执行原因（可多选，按事实勾选）</div>
+              <div class="flex flex-wrap gap-2 text-xs">
+                <span class="inline-flex items-center gap-1 rounded-full border border-outline-variant/30 px-2.5 py-1 text-on-surface-variant">
+                  <i data-lucide="square" class="w-3 h-3"></i>任务过大
+                </span>
+                <span class="inline-flex items-center gap-1 rounded-full border border-outline-variant/30 px-2.5 py-1 text-on-surface-variant">
+                  <i data-lucide="square" class="w-3 h-3"></i>现实受阻
+                </span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 font-medium">
+                  <i data-lucide="check-square" class="w-3 h-3"></i>安排冲突
+                </span>
+                <span class="inline-flex items-center gap-1 rounded-full border border-outline-variant/30 px-2.5 py-1 text-on-surface-variant">
+                  <i data-lucide="square" class="w-3 h-3"></i>失去兴趣
+                </span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 font-medium">
+                  <i data-lucide="check-square" class="w-3 h-3"></i>任务设计（时段不合理）
+                </span>
+              </div>
+              <p class="mt-2 text-xs text-on-surface-variant">不归因于懒惰；「是否失去兴趣」证据不足（insufficient_evidence），单次不想开始不能据此否定考研方向。</p>
+            </div>
+
+            <!-- 证据判定 -->
+            <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <span class="font-medium text-on-surface-variant">证据判定：</span>
+              <span class="inline-flex items-center gap-1 bg-warning/15 text-warning rounded px-2 py-0.5 font-medium">
+                <i data-lucide="git-branch" class="w-3 h-3"></i>complicates · 让「暂缓考研」的信息更复杂，但不改变结论
+              </span>
+              <span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface rounded px-2 py-0.5 font-medium">
+                <i data-lucide="shield-half" class="w-3 h-3"></i>可信度 medium
+              </span>
+            </div>
+          </article>
+
+          <!-- 列表-回合卡2：未开始（简卡，交代回合2状态） -->
+          <article id="round-card-2" class="bg-surface shadow-card rounded-xl p-5 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">
+                <i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i>waiting
+              </span>
+              <div>
+                <h3 class="text-sm font-semibold">回合 2 · 真实数据分析报告</h3>
+                <p class="text-xs text-on-surface-variant mt-0.5">未开始，本轮没有新证据；数据分析副路径仍为待验证缺口。</p>
+              </div>
+            </div>
+            <a href="evidence-cycle.html" id="link-round-2" class="shrink-0 text-xs font-medium text-primary hover:underline inline-flex items-center gap-1">
+              去安排<i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </article>
+        </section>
+
+        <!-- ===== 判断更新对照表 ===== -->
+        <section class="bg-surface shadow-card rounded-lg p-5" aria-labelledby="diff-heading">
+          <h2 id="diff-heading" class="text-base font-semibold flex items-center gap-2 mb-4">
+            <i data-lucide="columns-3" class="w-4 h-4 text-primary"></i>
+            行动前 → 行动后，哪些字段变了
+          </h2>
+          <p class="text-xs text-on-surface-variant mb-4">规则：只更新被新证据触及的字段，准备度/稳定度调整必须有证据支撑；没有证据的字段明确标注「不变」。</p>
+
+          <div class="overflow-x-auto">
+            <div class="min-w-[640px] divide-y divide-outline-variant/50 text-sm">
+              <!-- 表头 -->
+              <div class="grid grid-cols-4 gap-3 px-3 py-2.5 bg-surface-container text-xs font-semibold text-on-surface-variant rounded-t-md">
+                <span>判断层</span>
+                <span>行动前</span>
+                <span>新证据</span>
+                <span>现在</span>
+              </div>
+              <!-- 对照行1：主路径 -->
+              <div id="diff-row-1" class="grid grid-cols-4 gap-3 px-3 py-3 items-start">
+                <span class="font-medium">主路径（AI 产品实习）</span>
+                <span class="text-on-surface-variant">可低成本测试</span>
+                <span class="text-on-surface-variant">独立产出拆解 + 原型、主动投入</span>
+                <span class="text-success font-medium">维持主路径；准备度上调为 ready_to_pursue（限作品集维度）</span>
+              </div>
+              <!-- 对照行2：画像假设 -->
+              <div id="diff-row-2" class="grid grid-cols-4 gap-3 px-3 py-3 items-start">
+                <span class="font-medium">画像假设「兴趣受体面感影响」</span>
+                <span class="text-on-surface-variant">模型推断</span>
+                <span class="text-on-surface-variant">在无观众压力下仍投入 3 小时</span>
+                <span class="text-warning font-medium">部分削弱（仍需真实使用者验证）</span>
+              </div>
+              <!-- 对照行3：考研 -->
+              <div id="diff-row-3" class="grid grid-cols-4 gap-3 px-3 py-3 items-start">
+                <span class="font-medium">考研（暂缓）</span>
+                <span class="text-on-surface-variant">稳定投入未知</span>
+                <span class="text-on-surface-variant">3/10 天，以安排冲突为主</span>
+                <span class="text-on-surface font-medium">维持暂缓；改为固定晚间时段再做一次 7 天小测</span>
+              </div>
+              <!-- 对照行4：副路径 -->
+              <div id="diff-row-4" class="grid grid-cols-4 gap-3 px-3 py-3 items-start">
+                <span class="font-medium">副路径：数据分析</span>
+                <span class="text-on-surface-variant">—</span>
+                <span class="text-on-surface-variant">回合 2 未做</span>
+                <span class="text-on-surface-variant">仍为缺口，保留，不做判断更新</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-3 text-xs text-on-surface-variant">未被触及的字段（如异地意愿、家庭约束等）保持原值，不因一次结果定终身。</p>
+        </section>
+
+        <!-- ===== 最小下一步 & 路由卡 ===== -->
+        <section class="bg-primary-container/40 rounded-lg p-5" aria-labelledby="next-heading">
+          <h2 id="next-heading" class="text-base font-semibold flex items-center gap-2 mb-1">
+            <i data-lucide="navigation" class="w-4 h-4 text-primary"></i>
+            下一步（四选一）
+          </h2>
+          <p class="text-xs text-on-surface-variant mb-4">每个选择都是低成本、可退出的；等待不是失败，也可以先暂停。</p>
+
+          <div id="route-options" class="space-y-2.5">
+            <!-- 选项1（当前推荐，默认选中） -->
+            <label id="route-option-1" for="route-radio-1"
+                   class="route-option flex items-start gap-3 rounded-lg bg-surface shadow-card p-4 cursor-pointer border-2 border-primary">
+              <input type="radio" name="route" id="route-radio-1" value="continue" class="mt-0.5 accent-[#0E6A5F]" checked />
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold">继续主路径：验证真实使用者</span>
+                  <span class="inline-flex items-center text-[10px] bg-primary/10 text-primary rounded px-1.5 py-0.5 font-medium">推荐</span>
+                </div>
+                <p class="text-xs text-on-surface-variant mt-1">下一轮拿 4 屏原型找 1 位真实宿管或有报修经历的学生验证，仍低成本、不异地。</p>
+              </div>
+            </label>
+            <!-- 选项2 -->
+            <label id="route-option-2" for="route-radio-2"
+                   class="route-option flex items-start gap-3 rounded-lg bg-surface shadow-card p-4 cursor-pointer border-2 border-transparent">
+              <input type="radio" name="route" id="route-radio-2" value="redesign" class="mt-0.5 accent-[#0E6A5F]" />
+              <div class="flex-1">
+                <span class="text-sm font-semibold">重设计考研节奏测试</span>
+                <p class="text-xs text-on-surface-variant mt-1">固定晚间时段、周期缩短为 7 天、时长降到 30 分钟，排除时段不合理这一干扰。</p>
+              </div>
+            </label>
+            <!-- 选项3 -->
+            <label id="route-option-3" for="route-radio-3"
+                   class="route-option flex items-start gap-3 rounded-lg bg-surface shadow-card p-4 cursor-pointer border-2 border-transparent">
+              <input type="radio" name="route" id="route-radio-3" value="round2" class="mt-0.5 accent-[#0E6A5F]" />
+              <div class="flex-1">
+                <span class="text-sm font-semibold">开始回合 2：真实数据分析报告</span>
+                <p class="text-xs text-on-surface-variant mt-1">补上副路径缺口，用一份小报告检验数据清洗与分析的实际投入感。</p>
+              </div>
+            </label>
+            <!-- 选项4 -->
+            <label id="route-option-4" for="route-radio-4"
+                   class="route-option flex items-start gap-3 rounded-lg bg-surface shadow-card p-4 cursor-pointer border-2 border-transparent">
+              <input type="radio" name="route" id="route-radio-4" value="pause" class="mt-0.5 accent-[#0E6A5F]" />
+              <div class="flex-1">
+                <span class="text-sm font-semibold">暂停 / 关闭本轮</span>
+                <p class="text-xs text-on-surface-variant mt-1">保存现状，之后随时继续，不强制循环；已确认结论在有效期内保留。</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- 立即的小动作 -->
+          <div class="mt-4 flex items-start gap-2 rounded-md bg-surface px-3 py-2.5 text-xs text-on-surface-variant border border-outline-variant/20">
+            <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+            <p><span class="font-medium text-on-surface">立即的小动作：</span>明天把原型照片发给 1 位符合真实使用者画像的人（宿管 / 近期报修过的学生）。是否发送由你决定，我不代发。</p>
+          </div>
+
+          <!-- 路由按钮 -->
+          <div class="mt-4 flex flex-wrap gap-3">
+            <a href="evidence-cycle.html" id="btn-continue"
+               class="bg-primary text-on-primary px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-2">
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>按此继续
+            </a>
+            <a href="path-convergence.html" id="btn-back-convergence"
+               class="px-4 py-2 rounded-md text-sm font-medium border border-outline-variant/30 text-on-surface hover:bg-surface transition-all inline-flex items-center gap-2">
+              返回路径收敛
+            </a>
+            <a href="chat.html" id="btn-back-workbench"
+               class="px-4 py-2 rounded-md text-sm font-medium border border-outline-variant/30 text-on-surface hover:bg-surface transition-all inline-flex items-center gap-2">
+              回到工作台
+            </a>
+          </div>
+        </section>
+
+        <!-- ===== 数据与隐私小卡 ===== -->
+        <section id="privacy-card" class="bg-surface rounded-lg p-4 border border-outline-variant/20">
+          <div class="flex items-start gap-3">
+            <i data-lucide="shield-check" class="w-5 h-5 text-primary shrink-0 mt-0.5"></i>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              CapLab 不主动索要身份证号等无关隐私，你可随时导出或删除数据。若你此刻有伤害自己或他人的念头或面临即时危险，请先停止生涯讨论，联系一位可信任的人、学校心理中心或紧急求助——你不必独自承受。
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ 右侧：sticky 结论栏（移动端堆叠在底部） ============ -->
+      <aside class="w-full lg:w-80 shrink-0 lg:sticky lg:top-20">
+        <div class="bg-surface shadow-card rounded-lg p-4 space-y-3">
+          <h2 class="text-sm font-semibold flex items-center gap-2">
+            <i data-lucide="file-badge" class="w-4 h-4 text-primary"></i>
+            本轮报告结论
+          </h2>
+
+          <div class="space-y-2.5 text-xs divide-y divide-outline-variant/40">
+            <div class="flex items-start justify-between gap-3 pt-1">
+              <span class="text-on-surface-variant shrink-0">结论有效期</span>
+              <span class="text-on-surface font-medium text-right">至 2026-03</span>
+            </div>
+            <div class="flex items-start justify-between gap-3 pt-2.5">
+              <span class="text-on-surface-variant shrink-0">知识库版本</span>
+              <span class="text-on-surface font-medium text-right">免费版 v2.3.0</span>
+            </div>
+            <div class="flex items-start gap-2 pt-2.5">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-on-surface-variant shrink-0 mt-0.5"></i>
+              <span class="text-on-surface-variant">跨会话延续：已确认内容会保留，未确认项保持草稿。</span>
+            </div>
+            <div class="flex items-start gap-2 pt-2.5">
+              <i data-lucide="history" class="w-3.5 h-3.5 text-on-surface-variant shrink-0 mt-0.5"></i>
+              <span class="text-on-surface-variant">若你纠正早期事实：将回到最早受影响阶段重新核验。</span>
+            </div>
+          </div>
+
+          <div class="pt-1 space-y-2">
+            <!-- 生成报告 / 导出（静态行为，原型仅注释说明） -->
+            <button type="button" id="btn-export-pdf"
+                    class="w-full bg-primary text-on-primary px-3 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+              <i data-lucide="download" class="w-4 h-4"></i>生成报告 / 导出（PDF/打印）
+            </button>
+            <!-- 导出我的数据 -->
+            <button type="button" id="btn-export-json"
+                    class="w-full px-3 py-2 rounded-md text-sm font-medium border border-outline-variant/30 text-on-surface hover:bg-surface-container transition-all inline-flex items-center justify-center gap-2">
+              <i data-lucide="file-json" class="w-4 h-4"></i>导出我的数据 (JSON)
+            </button>
+            <!-- 删除我的数据 -->
+            <button type="button" id="btn-delete-data"
+                    class="w-full px-3 py-2 rounded-md text-sm font-medium text-error hover:bg-error/10 transition-all inline-flex items-center justify-center gap-2">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>删除我的数据
+            </button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+  <!-- @main-content:end -->
+
+  <script>
+    $(function () {
+
+      // 路由选项高亮（仅简单交互：点击 radio 时更新卡片边框与选中样式）
+      // 后续完整行为建议：
+      // 1. 选中后同步更新「按此继续」按钮的跳转地址（continue→evidence-cycle / redesign→evidence-cycle?mode=redesign / round2→evidence-cycle?round=2 / pause→chat.html）
+      // 2. 选择「暂停/关闭」时，按钮文案变为「保存并暂停」，并在提交时写入状态 stopped/paused
+      $('#route-options').on('change', 'input[name="route"]', function () {
+        var $selected = $(this).closest('.route-option');
+        $('.route-option').removeClass('border-primary').addClass('border-transparent');
+        $selected.removeClass('border-transparent').addClass('border-primary');
+      });
+
+      // 生成报告 / 导出 PDF —— 静态行为，原型阶段不执行真实导出：
+      // 后续应实现：1) 收集两张回合卡 + 对照表 + 选中路由；2) 调用浏览器打印（window.print，指定打印样式）或生成 PDF；3) 文件名建议 caplab-review-2026-03.pdf
+      $('#btn-export-pdf').on('click', function () {
+        console.log('导出复盘报告（PDF/打印）：原型静态行为，后续接入打印/PDF 生成');
+      });
+
+      // 导出我的数据 (JSON) —— 静态行为：
+      // 后续应实现：打包用户画像、路径判断、回合记录、证据判定为 JSON Blob 并触发下载
+      $('#btn-export-json').on('click', function () {
+        console.log('导出我的数据 JSON：原型静态行为，后续生成 Blob 下载');
+      });
+
+      // 删除我的数据 —— 静态行为：
+      // 后续应实现：弹出二次确认对话框，说明删除范围（画像/对话/回合）与不可恢复，确认后调用删除接口并回到 home.html
+      $('#btn-delete-data').on('click', function () {
+        console.log('删除我的数据：需二次确认后调用删除接口');
+      });
+    });
+
+    lucide.createIcons();
+  </script>
+</body>
+
+</html>

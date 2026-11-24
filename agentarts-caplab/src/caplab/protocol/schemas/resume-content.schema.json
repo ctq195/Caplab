@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://caplab.local/schemas/resume-content.schema.json",
+  "title": "CapLab Resume Content 1.4.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "candidate",
+    "sections",
+    "selected_evidence",
+    "selection_log",
+    "open_questions",
+    "scorecard"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "language",
+        "target_job",
+        "tailoring_mode",
+        "target_pages"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "zh-CN",
+            "en",
+            "bilingual"
+          ]
+        },
+        "target_job": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tailoring_mode": {
+          "type": "string",
+          "enum": [
+            "jd_tailored",
+            "general_direction"
+          ]
+        },
+        "jd_source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_pages": {
+          "type": "integer",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "two_page_reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "headline",
+        "contact"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "headline": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contact": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "type",
+          "items"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "entries",
+              "lines"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "selected_evidence": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "selection_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item_id",
+          "decision",
+          "reason"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "keep",
+              "hide",
+              "drop"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "scorecard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hard_gate_passed",
+        "optimization_round",
+        "dimensions"
+      ],
+      "properties": {
+        "hard_gate_passed": {
+          "type": "boolean"
+        },
+        "optimization_round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "dimensions": {
+          "type": "object"
+        }
+      }
+    },
+    "fact_bindings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "meta": {
+            "properties": {
+              "tailoring_mode": {
+                "const": "jd_tailored"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "meta": {
+            "required": [
+              "jd_source"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "meta": {
+            "properties": {
+              "target_pages": {
+                "const": 2
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "meta": {
+            "required": [
+              "two_page_reason"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

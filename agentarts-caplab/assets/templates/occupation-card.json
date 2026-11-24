@@ -1,0 +1,23 @@
+{
+  "id": "KOCC-000001",
+  "card_type": "occupation",
+  "title": null,
+  "created_at": null,
+  "updated_at": null,
+  "major_tags": [],
+  "region_tags": [],
+  "time_tags": [],
+  "major_event_tags": [],
+  "occupation_codes": [],
+  "core_activities": [],
+  "entry_requirements": [],
+  "work_context": [],
+  "location_scope": [],
+  "valid_until": null,
+  "adjacent_roles": [],
+  "claims": [],
+  "source_ids": [],
+  "supports": [],
+  "cannot_prove": ["职业事实不能单独证明用户适合该职业"],
+  "review_status": "pending_human_review"
+}

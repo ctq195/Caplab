@@ -1,0 +1,383 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   CapLab Design System
+   设计语言：克制、清晰、有温度。参考 DeepSeek / GPT / 豆包的现代 AI 产品质感，
+   以低饱和森林绿为主色，建立统一的色彩层级、排版节奏与动效系统。
+   ============================================================ */
+
+@theme inline {
+  /* ---- shadcn 标准映射（组件依赖，保持不变）---- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* ---- CapLab 原型别名 ---- */
+  --color-surface: var(--card);
+  --color-surface-container: var(--muted);
+  --color-surface-container-lowest: var(--card);
+  --color-surface-container-high: var(--secondary);
+  --color-on-surface: var(--foreground);
+  --color-on-surface-variant: var(--muted-foreground);
+  --color-on-primary: var(--primary-foreground);
+  --color-primary-container: var(--accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--destructive);
+  --color-outline: var(--border);
+  --color-outline-variant: var(--border);
+
+  /* ---- 品牌 tonal 色阶（供精细设计使用）---- */
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+
+  /* ---- 圆角：统一的圆角语言 ---- */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-full: 9999px;
+
+  /* ---- 阴影：克制、多层、柔和（拒绝廉价重阴影）---- */
+  --shadow-card: 0 1px 2px rgb(50 61 43 / 0.04), 0 1px 3px rgb(50 61 43 / 0.05);
+  --shadow-float: 0 2px 6px rgb(50 61 43 / 0.05), 0 12px 28px rgb(50 61 43 / 0.09);
+  --shadow-dialog: 0 8px 16px rgb(50 61 43 / 0.08), 0 24px 56px rgb(50 61 43 / 0.14);
+
+  /* ---- 字体：系统字体栈，零网络依赖，跨平台稳定 ---- */
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-display:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Microsoft YaHei', system-ui, sans-serif;
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', 'Songti SC', Georgia, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas,
+    'Liberation Mono', monospace;
+
+  /* ---- 动效曲线：Apple Spring + Material Motion ---- */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --animate-fade-up: fade-up 0.55s var(--ease-out) both;
+  --animate-fade-in: fade-in 0.4s var(--ease-out) both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:root {
+  /* 品牌森林绿 tonal scale */
+  --brand-50: #f0f2e9;
+  --brand-100: #e5ead7;
+  --brand-200: #bdccaf;
+  --brand-500: #728e63;
+  --brand-600: #31503b;
+  --brand-700: #274530;
+
+  /* 语义色 · 浅色 */
+  --radius: 0.875rem;
+  --background: #f8f8f1;
+  --foreground: #263123;
+  --card: #ffffff;
+  --card-foreground: #263123;
+  --popover: #ffffff;
+  --popover-foreground: #263123;
+  --primary: #31503b;
+  --primary-foreground: #ffffff;
+  --secondary: #eceee3;
+  --secondary-foreground: #263123;
+  --muted: #eceee3;
+  --muted-foreground: #586354;
+  --accent: #e5ead7;
+  --accent-foreground: #274530;
+  --destructive: #c4403a;
+  --success: #1c8557;
+  --warning: #a86f0b;
+  --border: #d3d9cb;
+  --input: #d5dcce;
+  --ring: #31503b;
+
+  color-scheme: light;
+}
+
+.dark {
+  /* 品牌森林绿 tonal scale · 深色 */
+  --brand-50: #20291d;
+  --brand-100: #303f2c;
+  --brand-200: #46583f;
+  --brand-500: #94b381;
+  --brand-600: #b4cba7;
+  --brand-700: #c5d8b8;
+
+  /* 语义色 · 深色 */
+  --background: #192018;
+  --foreground: #ecf1e7;
+  --card: #222b20;
+  --card-foreground: #ecf1e7;
+  --popover: #293126;
+  --popover-foreground: #ecf1e7;
+  --primary: #b4cba7;
+  --primary-foreground: #182116;
+  --secondary: #303a2e;
+  --secondary-foreground: #ecf1e7;
+  --muted: #2c352a;
+  --muted-foreground: #b3bfac;
+  --accent: #384a33;
+  --accent-foreground: #dbe8d3;
+  --destructive: #ef837a;
+  --success: #57c891;
+  --warning: #dfb25c;
+  --border: #42503e;
+  --input: #4c5946;
+  --ring: #b4cba7;
+
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    min-height: 100vh;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    text-rendering: optimizeLegibility;
+  }
+
+  /* 标题：更紧的字距与更稳健的行高，建立清晰的排版层级 */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    text-wrap: balance;
+    letter-spacing: -0.022em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--brand-100);
+    color: var(--brand-700);
+  }
+  .dark ::selection {
+    background: var(--brand-200);
+    color: var(--foreground);
+  }
+
+  /* 可访问性：清晰、统一的键盘焦点环 */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* 统一按钮基线：44px 触控高度、一致的圆角与过渡
+     用组合选择器共享基础样式（Tailwind v4 的 @apply 不能引用自定义类） */
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full text-sm font-medium
+           transition-all duration-200 ease-out active:scale-[0.98]
+           disabled:pointer-events-none disabled:opacity-50;
+    min-height: 44px;
+  }
+  .btn-primary {
+    @apply bg-primary px-5 text-primary-foreground shadow-sm
+           hover:brightness-110 hover:shadow-float;
+  }
+  .btn-secondary {
+    @apply border border-border bg-card px-5 text-foreground
+           hover:border-primary/30 hover:bg-muted;
+  }
+  .btn-ghost {
+    @apply px-3 text-muted-foreground hover:bg-muted hover:text-foreground;
+  }
+
+  .action-swatch {
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+    position: relative;
+    padding: clamp(2rem, 4vw, 3.5rem) 1rem;
+  }
+
+  .action-swatch::before,
+  .action-swatch::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .action-swatch::before {
+    inset: 2% 0;
+    border-radius: 61% 39% 34% 66% / 35% 43% 57% 65%;
+    background: var(--brand-100);
+  }
+
+  .action-swatch::after {
+    inset: 7% 4% 0 7%;
+    border: 1px solid var(--brand-500);
+    border-radius: 37% 63% 46% 54% / 51% 36% 64% 49%;
+    transform: rotate(-8deg);
+  }
+
+  .action-sheet {
+    width: min(100%, 20rem);
+    padding: clamp(1rem, 3vw, 1.6rem);
+    border: 1px solid var(--border);
+    border-radius: .4rem 1.7rem .5rem .5rem;
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: 5px 6px 0 #c88d68, 0 14px 28px rgb(50 61 43 / 12%);
+    transform: rotate(-2deg);
+  }
+
+  .action-sheet:focus-within {
+    outline: 1px solid var(--primary);
+  }
+
+  /* 统一徽章/标签 */
+  .eyebrow {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1
+           text-xs font-medium text-primary;
+  }
+
+  /* 交错入场：父容器加 .stagger，子元素自动依次淡入 */
+  .stagger > * {
+    animation: fade-up 0.55s var(--ease-out) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.04s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.10s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.16s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.22s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.28s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.34s; }
+}
+
+/* 尊重用户的减少动效偏好（可访问性） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+.voice-orb {
+  display: grid;
+  place-items: center;
+  width: clamp(8rem, 22vw, 11rem);
+  aspect-ratio: 1;
+  color: var(--primary);
+  border-radius: 52% 48% 58% 42% / 44% 56% 44% 56%;
+  background: radial-gradient(at 30% 25%, var(--brand-50), var(--brand-100) 50%, var(--brand-200));
+  box-shadow: 7px 8px 0 var(--muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .voice-orb-active { animation: breathe 3s ease-in-out infinite alternate; }
+  @keyframes breathe { to { transform: scale(1.045); } }
+}
+
+@page resumeA4 {
+  size: A4;
+  margin: 15mm;
+}
+
+@media print {
+  body:has(.resume-paper) :is(header, footer, main > a, main > [role="status"]) {
+    display: none !important;
+  }
+
+  body:has(.resume-paper) :is(main, main > .grid, main > .grid > section) {
+    display: block;
+    position: static;
+    max-width: none;
+    padding: 0;
+  }
+
+  .resume-paper {
+    page: resumeA4;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .resume-paper p {
+    break-inside: avoid;
+  }
+}

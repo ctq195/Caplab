@@ -1,0 +1,46 @@
+# AgentArts 高代码运行时配置模板
+# 实际字段以平台控制台/OpenAPI 为准；此文件记录必须覆盖的项，不作为可直接上传的 API 载荷。
+runtime:
+  name: caplab-career-agent
+  display_name: "CapLab 生涯探索助手"
+  region: cn-southwest-2          # 平台当前唯一支持区域
+  image: caplab-agentarts:latest  # 必须为 ARM64 镜像，来自 SWR
+  port: 8080                       # HTTP /invocations 标准端口
+  protocol: http                   # 可选 ws 流式
+  python_version: "3.10"
+  startup_command: "python app.py"
+
+versions:
+  strategy: immutable              # 每个版本独立镜像 tag，支持历史回溯
+  access_methods:
+    - name: Latest
+      version: latest
+    - name: Stable
+      version: "1.0.0"
+
+auth:
+  type: api_key                    # 可选 iam / oauth2 / api_key
+  # 密钥通过平台密钥管理注入，不写入镜像或配置文件
+
+storage:
+  # 本地磁盘在沙箱销毁后丢失，状态必须落外部存储
+  database:
+    type: rds_postgresql
+    dsn_env: DATABASE_URL
+    extensions: [vector]
+  # 会话存储用于多轮上下文（可选，1 个）
+  session_storage:
+    enabled: false
+  # 用户上传与产物（可选）
+  obs:
+    enabled: false
+
+observability:
+  logging: true
+  tracing: true
+  metrics: true
+  baggage_keys: [session_id, user_id]
+  verify_page: "观测与优化 > 观测 > 调用链分析"
+
+headers:
+  session_id: X-Hw-Agentarts-Session-Id

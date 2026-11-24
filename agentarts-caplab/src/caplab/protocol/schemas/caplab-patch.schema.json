@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://caplab.local/schemas/caplab-patch-1.0.0.json",
+  "title": "CapLab Patch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "patch_id",
+    "actor_skill",
+    "skill_version",
+    "base_revision",
+    "operation",
+    "changes",
+    "referenced_ids",
+    "requires_confirmation"
+  ],
+  "properties": {
+    "patch_id": {
+      "type": "string",
+      "pattern": "^PAT-[0-9]{6}$"
+    },
+    "actor_skill": {
+      "enum": [
+        "caplab-workflow-orchestrator",
+        "caplab-profile-intake",
+        "caplab-profile-confirmation",
+        "caplab-path-convergence",
+        "caplab-path-evidence-cycle",
+        "caplab-evidence-review"
+      ]
+    },
+    "skill_version": {
+      "const": "2.1.1"
+    },
+    "base_revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "operation": {
+      "const": "propose_patch"
+    },
+    "changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "op",
+          "path"
+        ],
+        "properties": {
+          "op": {
+            "enum": [
+              "set",
+              "append"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^/"
+          },
+          "value": {}
+        }
+      }
+    },
+    "referenced_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "requires_confirmation": {
+      "const": true
+    },
+    "summary": {
+      "type": "string"
+    }
+  }
+}

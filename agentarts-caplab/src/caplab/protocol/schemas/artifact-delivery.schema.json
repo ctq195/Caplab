@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Artifact delivery state 1.1.0",
+  "type": "object",
+  "required": [
+    "render_status",
+    "evidence_status",
+    "content_status",
+    "delivery_status"
+  ],
+  "properties": {
+    "render_status": {
+      "enum": [
+        "passed",
+        "failed"
+      ]
+    },
+    "evidence_status": {
+      "enum": [
+        "passed",
+        "blocked"
+      ]
+    },
+    "content_status": {
+      "enum": [
+        "draft",
+        "reviewed",
+        "passed"
+      ]
+    },
+    "delivery_status": {
+      "enum": [
+        "draft_only",
+        "needs_completion",
+        "ready"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "delivery_status": {
+            "const": "ready"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "render_status": {
+            "const": "passed"
+          },
+          "evidence_status": {
+            "const": "passed"
+          },
+          "content_status": {
+            "const": "passed"
+          }
+        }
+      }
+    }
+  ]
+}

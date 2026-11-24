@@ -1,0 +1,60 @@
+{
+  "elements": [
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/home.html"
+      },
+      "title": "开场首页",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/chat.html"
+      },
+      "title": "对话工作台",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/path-convergence.html"
+      },
+      "title": "路径收敛",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/evidence-cycle.html"
+      },
+      "title": "证据回合",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/resume.html"
+      },
+      "title": "简历工坊",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/interview.html"
+      },
+      "title": "模拟面试",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/review-report.html"
+      },
+      "title": "复盘报告",
+      "size": "web"
+    }
+  ]
+}
